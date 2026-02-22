@@ -1,0 +1,52 @@
+# Built outputs
+*.apk
+*.aab
+*.dex
+*.class
+bin/
+build/
+out/
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# Local configuration (machine-specific, never commit)
+local.properties
+*.properties
+!gradle.properties
+
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Kotlin
+*.kotlin_module
+
+# Proguard
+proguard/
+
+# Test results
+test-results/
+lint/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Signing keys (never commit keystores or key files)
+*.jks
+*.keystore
+*.p12
+keystore.properties

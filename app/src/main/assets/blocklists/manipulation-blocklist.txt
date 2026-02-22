@@ -1,0 +1,617 @@
+# Fairer — manipulation-blocklist.txt
+# Last updated: 2026-02
+#
+# This file blocks the backend services that power commercial price manipulation.
+# Each domain is formatted as a standard hosts-file entry: 0.0.0.0 domain.com
+# Lines beginning with # are comments and are ignored by the app.
+# Parent-domain matching is built into Fairer — blocking "example.com" also
+# blocks "cdn.example.com", "api.example.com", and so on.
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 1: DYNAMIC PRICING ENGINES
+#
+# These services change the price you see in real time based on who they think
+# you are — your device, your location, how long you've been browsing, whether
+# you've visited before, and what they guess your budget is. They are why two
+# people buying the same flight, hotel room, or supermarket delivery slot at the
+# same moment can pay completely different prices. The goal is to extract the
+# maximum amount each individual customer is willing to pay.
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Pricefx — enterprise AI pricing platform used by large retailers and
+# manufacturers to set and vary prices dynamically per customer segment
+0.0.0.0 pricefx.com
+0.0.0.0 cdn.pricefx.com
+0.0.0.0 api.pricefx.com
+0.0.0.0 app.pricefx.com
+
+# Revionics / Aptos — retail dynamic pricing AI; acquired by Aptos in 2022.
+# Powers automated price changes across grocery, fashion, and general retail.
+0.0.0.0 revionics.com
+0.0.0.0 aptos.com
+0.0.0.0 aptosretail.com
+
+# Zilliant — B2B dynamic pricing and price optimisation platform.
+# Used to set different prices for different business customers.
+0.0.0.0 zilliant.com
+0.0.0.0 app.zilliant.com
+0.0.0.0 api.zilliant.com
+
+# Vendavo — pricing intelligence and deal management for B2B companies.
+# Analyses customer data to recommend the highest price each buyer will accept.
+0.0.0.0 vendavo.com
+0.0.0.0 api.vendavo.com
+
+# PROS Holdings — AI-powered pricing and revenue management.
+# Used by airlines, hotels, and large retailers to optimise prices per user.
+0.0.0.0 pros.com
+0.0.0.0 pros.ai
+0.0.0.0 prosgroup.com
+
+# Competera — retail pricing AI that adjusts prices in response to competitor
+# data and demand signals, enabling real-time price discrimination.
+0.0.0.0 competera.net
+0.0.0.0 competera.com
+
+# Omnia Retail — automated dynamic pricing for online and omnichannel retail.
+0.0.0.0 omnia-retail.com
+0.0.0.0 omniaretail.com
+
+# Prisync — competitor price monitoring and dynamic repricing.
+0.0.0.0 prisync.com
+
+# Wiser Solutions — market intelligence and dynamic pricing for retailers.
+0.0.0.0 wiser.com
+0.0.0.0 wiser.io
+0.0.0.0 intelligence.wiser.com
+
+# Profitero — digital shelf analytics and pricing intelligence used by brands
+# to monitor and respond to competitors' prices in real time.
+0.0.0.0 profitero.com
+0.0.0.0 api.profitero.com
+
+# Sniffie — AI pricing software for e-commerce.
+0.0.0.0 sniffie.io
+
+# Paarly — price intelligence and dynamic pricing for e-commerce retailers.
+0.0.0.0 paarly.com
+
+# Minderest — price monitoring and dynamic pricing platform.
+0.0.0.0 minderest.com
+
+# PriceBeam — consumer willingness-to-pay research used to calibrate pricing.
+0.0.0.0 pricebeam.com
+
+# Pricemoov — dynamic pricing platform for travel and e-commerce.
+0.0.0.0 pricemoov.com
+
+# Feedvisor — AI-powered repricing and intelligence for Amazon and retail.
+0.0.0.0 feedvisor.com
+0.0.0.0 api.feedvisor.com
+
+# Boomerang Commerce — Amazon pricing analytics and dynamic repricing.
+0.0.0.0 boomerangcommerce.com
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 2: A/B TESTING AND PERSONALISATION PLATFORMS
+#
+# These services run invisible experiments on you without your knowledge. They
+# show different people different prices, layouts, button colours, or offers —
+# then measure which version makes each type of person spend the most. They also
+# build detailed behavioural profiles to "personalise" what you see, which in
+# practice often means showing you the price or product that maximises revenue
+# from you specifically, not the best option for you.
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Optimizely — the world's largest A/B testing and experimentation platform.
+# Used to run pricing experiments and personalise what each visitor sees.
+0.0.0.0 optimizely.com
+0.0.0.0 cdn.optimizely.com
+0.0.0.0 logx.optimizely.com
+0.0.0.0 api.optimizely.com
+0.0.0.0 app.optimizely.com
+0.0.0.0 p13n.svc.optimizely.com
+0.0.0.0 optimizelabs.com
+
+# Adobe Target / Adobe Experience Cloud — enterprise A/B testing and
+# personalisation suite. omtrdc.net is the tracking server domain used by
+# Adobe Target and Adobe Analytics across millions of websites.
+# demdex.net is Adobe Audience Manager — it profiles you across sites.
+0.0.0.0 adobetarget.com
+0.0.0.0 tt.omtrdc.net
+0.0.0.0 mbox.omtrdc.net
+0.0.0.0 omtrdc.net
+0.0.0.0 demdex.net
+0.0.0.0 2o7.net
+0.0.0.0 everesttech.net
+0.0.0.0 adobedtm.com
+0.0.0.0 assets.adobedtm.com
+0.0.0.0 adobedc.net
+
+# Dynamic Yield — AI personalisation platform acquired by Mastercard.
+# Used to show different prices and product recommendations per user profile.
+0.0.0.0 dynamic-yield.com
+0.0.0.0 cdn.dynamicyield.com
+0.0.0.0 dy-api.com
+0.0.0.0 st.dynamicyield.com
+0.0.0.0 ctx.dy-api.com
+0.0.0.0 rcom.dynamic-yield.com
+
+# Monetate / Kibo Commerce — personalisation and A/B testing for retail.
+# Powers different prices and promotions for different customer segments.
+0.0.0.0 monetate.com
+0.0.0.0 monetate.net
+0.0.0.0 engine.monetate.net
+0.0.0.0 data.monetate.com
+
+# Qubit — personalisation platform for travel, retail, and fashion.
+# Uses behavioural data to show targeted prices and promotions.
+0.0.0.0 qubit.com
+0.0.0.0 goqubit.com
+0.0.0.0 qubitproducts.com
+0.0.0.0 d3c3cq33003psk.cloudfront.net
+
+# Evergage / Salesforce Interaction Studio (now Marketing Cloud Personalization)
+# — real-time personalisation engine embedded across retail and travel sites.
+0.0.0.0 evergage.com
+0.0.0.0 cdn.evergage.com
+0.0.0.0 api.evergage.com
+
+# VWO (Visual Website Optimizer) by Wingify — A/B testing and conversion
+# optimisation platform widely used for price and offer experiments.
+0.0.0.0 vwo.com
+0.0.0.0 visualwebsiteoptimizer.com
+0.0.0.0 dev.visualwebsiteoptimizer.com
+0.0.0.0 wingify.com
+0.0.0.0 wingify-ci.com
+
+# AB Tasty — A/B testing and personalisation platform used in e-commerce.
+0.0.0.0 abtasty.com
+0.0.0.0 cdn.abtasty.com
+0.0.0.0 try.abtasty.com
+
+# Kameleoon — A/B testing and personalisation with AI-driven targeting.
+0.0.0.0 kameleoon.com
+0.0.0.0 cdn.kameleoon.com
+0.0.0.0 api.kameleoon.com
+
+# Convert — enterprise A/B testing and personalisation platform.
+0.0.0.0 convert.com
+0.0.0.0 data.convert.com
+0.0.0.0 bugs.convert.com
+
+# Conductrics — decision-automation and A/B testing service for pricing.
+0.0.0.0 conductrics.com
+
+# Sitespect — server-side A/B testing and personalisation (no JavaScript tag).
+0.0.0.0 sitespect.com
+
+# Intellimize — AI-driven website personalisation and A/B testing.
+0.0.0.0 intellimize.com
+
+# Certona / Kibo — personalised product recommendations with pricing signals.
+0.0.0.0 certona.com
+0.0.0.0 certona.net
+
+# Barilliance — e-commerce personalisation and dynamic pricing add-on.
+0.0.0.0 barilliance.com
+0.0.0.0 barilliance.net
+
+# Rich Relevance (Sitecore Discover) — personalised product recommendations
+# and search results, used to surface higher-margin items per user.
+0.0.0.0 richrelevance.com
+0.0.0.0 api.richrelevance.com
+0.0.0.0 recs.richrelevance.com
+
+# Nosto — personalisation platform for e-commerce, including dynamic pricing.
+0.0.0.0 nosto.com
+0.0.0.0 connect.nosto.com
+
+# Segmentify — AI personalisation for e-commerce (product recs, pricing).
+0.0.0.0 segmentify.com
+0.0.0.0 cdn.segmentify.com
+
+# Bloomreach / Exponea — commerce experience and customer data platform.
+# Powers personalised pricing, search results, and email campaigns.
+0.0.0.0 bloomreach.com
+0.0.0.0 bloomreach.io
+0.0.0.0 exponea.com
+0.0.0.0 api.exponea.com
+
+# Emarsys (SAP) — omnichannel personalisation and marketing automation.
+# scarabresearch.com is the JavaScript-based product recommender used in-page.
+0.0.0.0 emarsys.com
+0.0.0.0 emarsys.net
+0.0.0.0 scarabresearch.com
+
+# Attraqt / Fredhopper — search, merchandising, and personalisation platform.
+# Used to change which products appear first (and at what price) per user.
+0.0.0.0 attraqt.com
+0.0.0.0 fredhopper.com
+0.0.0.0 fh-api.com
+
+# Findologic — search and product discovery platform with personalisation.
+0.0.0.0 findologic.com
+0.0.0.0 cdn.findologic.com
+
+# Coveo — AI search and personalisation; surfaces content and prices by profile.
+0.0.0.0 coveo.com
+0.0.0.0 coveops.com
+0.0.0.0 cloud.coveo.com
+
+# Insider / Useinsider — customer experience and personalisation platform.
+0.0.0.0 useinsider.com
+0.0.0.0 ins.buzz
+0.0.0.0 ingage.io
+
+# Personyze — behavioural personalisation and product recommendation engine.
+0.0.0.0 personyze.com
+
+# CleverTap / Leanplum — mobile personalisation and engagement platforms
+# that adapt prices and offers to individual users in real time.
+0.0.0.0 clevertap.com
+0.0.0.0 wzrkt.com
+0.0.0.0 leanplum.com
+0.0.0.0 lp-push-server-01.leanplum.com
+
+# Braze — customer engagement platform used to send personalised pricing
+# messages and targeted offers based on behavioural data.
+0.0.0.0 braze.com
+0.0.0.0 braze.eu
+0.0.0.0 appboy.com
+
+# Taplytics — A/B testing and feature flagging platform for mobile apps.
+0.0.0.0 taplytics.com
+
+# FullStory — session recording and behavioural analytics. Records exactly
+# where you click, scroll, and hesitate — used to refine pricing experiments.
+0.0.0.0 fullstory.com
+0.0.0.0 rs.fullstory.com
+0.0.0.0 edge.fullstory.com
+
+# Hotjar — heatmaps and session recordings used to observe user behaviour
+# and identify the highest price people will tolerate.
+0.0.0.0 hotjar.com
+0.0.0.0 static.hotjar.com
+0.0.0.0 api.hotjar.com
+0.0.0.0 vars.hotjar.com
+
+# Mouseflow — session replay and funnel analysis used for pricing optimisation.
+0.0.0.0 mouseflow.com
+0.0.0.0 cdn.mouseflow.com
+
+# Contentsquare / ClickTale — behavioural analytics that reveal how users
+# interact with pricing pages, used to optimise revenue extraction.
+0.0.0.0 contentsquare.com
+0.0.0.0 clicktale.net
+0.0.0.0 clicktale.com
+0.0.0.0 cs-i.com
+
+# Medallia / Decibel Insight — experience analytics feeding into pricing models.
+0.0.0.0 medallia.com
+0.0.0.0 decibel.com
+0.0.0.0 dbi.io
+
+# Salesforce Marketing Cloud / Krux DMP — data management and audience
+# segmentation platform used to build profiles for targeted pricing.
+0.0.0.0 krux.com
+0.0.0.0 kxcdn.com
+0.0.0.0 exacttarget.com
+0.0.0.0 pardot.com
+
+# Amplitude — product analytics used to analyse purchasing behaviour and
+# optimise pricing page design and offer presentation.
+0.0.0.0 amplitude.com
+0.0.0.0 api.amplitude.com
+0.0.0.0 analytics.amplitude.com
+0.0.0.0 cdn.amplitude.com
+
+# Mixpanel — event-based analytics used to study the customer journey
+# and measure responses to price changes.
+0.0.0.0 mixpanel.com
+0.0.0.0 api.mixpanel.com
+0.0.0.0 api-js.mixpanel.com
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 3: DATA BROKERS THAT FEED PRICING ALGORITHMS
+#
+# These companies collect your personal data from thousands of sources —
+# your shopping history, where you live, how much you earn, what you browse,
+# who your friends are, and much more — then package it into profiles and sell
+# it to businesses. Those businesses use your profile to decide what price to
+# show you, whether to approve your application, and what terms to offer you.
+# You have never agreed to this, and in most cases you cannot see what data
+# they hold about you or challenge it.
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Acxiom — one of the world's largest data brokers. Holds records on hundreds
+# of millions of people covering purchases, demographics, interests, and wealth,
+# sold to retailers and financial services for pricing and targeting.
+0.0.0.0 acxiom.com
+0.0.0.0 acxiom.co.uk
+0.0.0.0 acxiom.de
+0.0.0.0 acxiom.fr
+0.0.0.0 acxiom.com.au
+0.0.0.0 acxiomdigital.com
+0.0.0.0 recognicorp.com
+
+# LiveRamp — identity resolution and data connectivity platform. Links your
+# online behaviour to your real-world identity and sells access to advertisers
+# and pricing systems. rlcdn.com is LiveRamp's content delivery network.
+0.0.0.0 liveramp.com
+0.0.0.0 liveramp.co.uk
+0.0.0.0 liveramp.de
+0.0.0.0 liveramp.fr
+0.0.0.0 liveramp.com.au
+0.0.0.0 rlcdn.com
+0.0.0.0 ats.rlcdn.com
+0.0.0.0 idl.rlcdn.com
+0.0.0.0 pippio.com
+0.0.0.0 connectid.net
+0.0.0.0 faktor.io
+0.0.0.0 absorbent.net
+
+# Oracle Data Cloud — Oracle's data brokerage arm, built from acquiring
+# BlueKai (audience data), Datalogix (offline purchase data), and AddThis
+# (social sharing and browsing data). One of the largest commercial data
+# pools in the world, used directly in pricing and targeting systems.
+0.0.0.0 bluekai.com
+0.0.0.0 bkrtx.com
+0.0.0.0 addthis.com
+0.0.0.0 clearspring.com
+0.0.0.0 datalogix.com
+0.0.0.0 oracleinfinity.io
+0.0.0.0 data.oracleinfinity.io
+0.0.0.0 eloqua.com
+0.0.0.0 en25.com
+0.0.0.0 responsys.net
+
+# Experian Marketing Services — the marketing division of Experian (the credit
+# bureau). Sells consumer profiles combining financial, demographic, and
+# behavioural data to businesses for pricing and credit decisions.
+0.0.0.0 experian.com
+0.0.0.0 experian.co.uk
+0.0.0.0 experian.com.au
+0.0.0.0 experian.com.br
+0.0.0.0 experianmarketingservices.com
+0.0.0.0 experianplc.com
+0.0.0.0 hitwise.com
+0.0.0.0 edq.com
+0.0.0.0 qas.com
+
+# TransUnion / Neustar — credit bureau and identity resolution company.
+# Neustar links online identities across devices; TransUnion sells financial
+# risk profiles used in insurance and lending pricing.
+0.0.0.0 neustar.biz
+0.0.0.0 neustar.com
+0.0.0.0 cdn.neustar.biz
+0.0.0.0 transunion.com
+
+# Equifax — major credit bureau that also sells demographic and behavioural
+# data to marketers and insurers for personalised pricing.
+0.0.0.0 equifax.com
+0.0.0.0 equifax.co.uk
+0.0.0.0 equifaxsolutions.com
+0.0.0.0 efxdata.com
+
+# Epsilon / Publicis — data-driven marketing company with one of the largest
+# consumer databases in the US. Sells audience segments to retailers for
+# targeted offers and dynamic pricing campaigns.
+0.0.0.0 epsilon.com
+0.0.0.0 conversant.com
+0.0.0.0 mediaplex.com
+0.0.0.0 valueclick.com
+0.0.0.0 dotomi.com
+
+# Lotame — independent data management platform and data marketplace.
+# crwdcntrl.net (Crowd Control) is Lotame's tracking domain used across sites.
+0.0.0.0 lotame.com
+0.0.0.0 lotame.io
+0.0.0.0 crwdcntrl.net
+0.0.0.0 bcp.crwdcntrl.net
+
+# Eyeota — audience data marketplace operating across Asia-Pacific and Europe,
+# supplying consumer profiles to advertisers and e-commerce pricing platforms.
+0.0.0.0 eyeota.com
+0.0.0.0 eyeota.net
+
+# Tapad — cross-device identity graph that links your phone, laptop, tablet,
+# and TV to a single profile used in pricing and ad targeting.
+0.0.0.0 tapad.com
+
+# Nielsen Marketing Cloud (eXelate) — audience segmentation data from Nielsen,
+# combining panel, purchase, and digital data into profiles for pricing use.
+0.0.0.0 exelate.com
+0.0.0.0 exelate.info
+0.0.0.0 nlsndirect.com
+0.0.0.0 mrpdata.net
+
+# Comscore — audience measurement company whose tracking data is used to
+# profile consumer behaviour and feed into targeting and pricing models.
+0.0.0.0 scorecardresearch.com
+0.0.0.0 beacon.scorecardresearch.com
+0.0.0.0 imrworldwide.com
+
+# Merkle (Dentsu) — data-driven marketing agency and identity resolution
+# company. Builds and maintains rich consumer profiles used in pricing.
+0.0.0.0 merkleinc.com
+0.0.0.0 merkle.com
+
+# Dunnhumby — retail data science company founded by Tesco. Sells insights
+# derived from loyalty card data to FMCG brands for pricing and targeting.
+0.0.0.0 dunnhumby.com
+
+# 84.51° — Kroger's data science subsidiary. Sells shopper insights based on
+# loyalty card data to consumer goods companies to inform pricing strategies.
+0.0.0.0 8451.com
+
+# Kantar — global data and insight company. Sells consumer panel data used
+# by brands and retailers to set and adjust prices.
+0.0.0.0 kantar.com
+0.0.0.0 kantarmedia.com
+0.0.0.0 worldpanel.com
+
+# IRI / Circana — consumer and market intelligence company. Provides purchase
+# data and pricing analytics to FMCG brands and retailers.
+0.0.0.0 iriworldwide.com
+0.0.0.0 iri.com
+0.0.0.0 circana.com
+
+# Criteo — retargeting and personalised advertising network. Tracks your
+# browsing and purchase history across millions of sites to build a profile
+# used in both advertising and dynamic pricing decisions.
+0.0.0.0 criteo.com
+0.0.0.0 criteo.net
+0.0.0.0 criteo.us
+0.0.0.0 emailretargeting.com
+0.0.0.0 ssp.criteo.com
+0.0.0.0 dis.criteo.com
+
+# The Trade Desk / adsrvr.org — programmatic advertising platform with a
+# large consumer identity graph used in audience-based pricing.
+0.0.0.0 thetradedesk.com
+0.0.0.0 adsrvr.org
+
+# 33Across — audience data and programmatic advertising company.
+0.0.0.0 33across.com
+
+# Throtle — identity resolution platform linking online and offline data.
+0.0.0.0 throtle.io
+
+# ID5 — shared identity infrastructure for advertising and targeting.
+0.0.0.0 id5.io
+0.0.0.0 id5-sync.com
+
+# Samba TV — automatic content recognition (ACR) technology that tracks what
+# you watch on your smart TV and sells that data to advertisers and retailers.
+0.0.0.0 samba.tv
+0.0.0.0 sambatvd.com
+
+# Alphonso (LG Ads) — smart TV data company. Tracks viewing behaviour on
+# millions of televisions and sells the data to brands for pricing and targeting.
+0.0.0.0 alphonso.tv
+0.0.0.0 alphonso.us
+
+# CoreLogic — property and financial data company. Sells property, mortgage,
+# and neighbourhood data used in insurance pricing and credit decisions.
+0.0.0.0 corelogic.com
+0.0.0.0 dataquick.com
+0.0.0.0 teletrack.com
+
+# Drawbridge (LinkedIn) — cross-device identity graph, now part of LinkedIn.
+# Used to link people's devices and build profiles for targeting.
+0.0.0.0 drawbridge.com
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 4: INSURANCE PRICING DATA FEEDS
+#
+# These companies supply insurers with data that is used to calculate your
+# personal premium — often without you knowing what information is being used
+# or where it came from. This data can include your claims history, your
+# driving behaviour, where you live, what your neighbours claim, your credit
+# score, and inferred lifestyle factors. Because this data is invisible to you,
+# it is very difficult to challenge an unfair premium.
+# ══════════════════════════════════════════════════════════════════════════════
+
+# LexisNexis Risk Solutions — one of the primary data suppliers to the
+# insurance industry worldwide. Provides insurers with claims history (via the
+# C.L.U.E. database), identity verification, fraud detection, and risk scores.
+# Insurers run your name against LexisNexis before quoting you a price.
+0.0.0.0 lexisnexisrisk.com
+0.0.0.0 risk.lexisnexis.com
+0.0.0.0 accurint.com
+0.0.0.0 seisint.com
+0.0.0.0 choicepoint.com
+0.0.0.0 clue.com
+0.0.0.0 riskview.com
+0.0.0.0 lexid.com
+0.0.0.0 hireright.com
+
+# Verisk Analytics — the other major insurance data and analytics company.
+# Its subsidiary ISO (Insurance Services Office) sets the statistical models
+# that most US and UK insurers use to calculate base premiums. Verisk also
+# provides telematics, property risk, and catastrophe modelling data.
+0.0.0.0 verisk.com
+0.0.0.0 verisk.co.uk
+0.0.0.0 verisk.com.au
+0.0.0.0 veriskfinancial.com
+0.0.0.0 iso.com
+0.0.0.0 drivefactor.com
+0.0.0.0 argus-advisory.com
+
+# Wood Mackenzie (Verisk) — energy and commodity intelligence that informs
+# risk models used in home and business insurance pricing.
+0.0.0.0 woodmac.com
+0.0.0.0 wood-mackenzie.com
+
+# CCC Intelligent Solutions — the dominant platform for auto insurance
+# claims estimating in the US. Holds repair cost and total-loss data used
+# to set premiums and settle claims.
+0.0.0.0 cccis.com
+0.0.0.0 cccone.com
+
+# Solera / Audatex — auto claims and vehicle data company used by insurers
+# globally to value vehicles, estimate repairs, and set premiums.
+# qapter.com is Solera's AI-based estimating platform.
+0.0.0.0 solera.com
+0.0.0.0 audatex.com
+0.0.0.0 audatex.co.uk
+0.0.0.0 audanet.com
+0.0.0.0 qapter.com
+0.0.0.0 autosource.com
+0.0.0.0 hollander.com
+
+# Mitchell International — auto physical damage and workers' compensation
+# claims data used by insurers to price and settle claims.
+0.0.0.0 mitchell.com
+0.0.0.0 mitchellrepair.com
+
+# Arity (Allstate subsidiary) — telematics data company. Collects driving
+# behaviour data from mobile apps and sells it to insurers to price risk.
+0.0.0.0 arity.com
+
+# Cambridge Mobile Telematics (CMT) — largest telematics platform. Tracks
+# driving behaviour through smartphone sensors and feeds the data to insurers.
+0.0.0.0 cmtelematics.com
+0.0.0.0 drivewell.com
+
+# Octo Telematics — telematics data platform used by auto insurers to score
+# driving behaviour and set usage-based insurance premiums.
+0.0.0.0 octotelematics.com
+0.0.0.0 octo.com
+
+# Ingenie — UK telematics insurer and data provider specialising in young
+# driver risk scoring using black-box and app-based driving data.
+0.0.0.0 ingenie.com
+
+# FICO — best known for credit scores, FICO also sells insurance risk scores
+# and analytics used in pricing home, auto, and life insurance.
+0.0.0.0 fico.com
+0.0.0.0 ficoanalyticcloud.com
+
+# TLO (TransUnion) — data aggregation and identity intelligence platform used
+# by insurers and lenders to verify identities and assess risk.
+0.0.0.0 tlo.com
+
+# Guidewire — insurance software platform whose cloud telemetry and analytics
+# products feed into underwriting and pricing decisions.
+0.0.0.0 guidewire.com
+0.0.0.0 guidewire.net
+
+# Claims and Underwriting Exchange (CUE) — UK insurance industry database
+# of all motor, home, and personal injury claims. Queried by every UK insurer
+# before offering a quote.
+0.0.0.0 cue.co.uk
+0.0.0.0 claimsportal.org.uk
+
+# Hunter — UK insurance fraud detection network. Used at quote stage to
+# flag customers as higher risk, increasing the premium they are offered.
+0.0.0.0 hunteruk.com
+
+# Polaris — UK insurance industry data network used to share customer
+# data between insurers for risk pricing.
+0.0.0.0 polaris.co.uk
