@@ -1,0 +1,498 @@
+# vendors.txt — seed domains for blocklist discovery
+#
+# One domain per line. Lines starting with # are comments.
+# The build script will probe common subdomains for each seed
+# and merge any discovered live subdomains into the blocklist.
+#
+# Add new vendors here; the build script handles everything else.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORY 1: DYNAMIC PRICING ENGINES
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Pricefx
+pricefx.com
+
+# Revionics / Aptos
+revionics.com
+aptos.com
+aptosretail.com
+
+# Zilliant
+zilliant.com
+
+# Vendavo
+vendavo.com
+
+# PROS Holdings
+pros.com
+pros.ai
+prosgroup.com
+
+# Competera
+competera.net
+competera.com
+
+# Omnia Retail
+omnia-retail.com
+omniaretail.com
+
+# Prisync
+prisync.com
+
+# Wiser Solutions
+wiser.com
+wiser.io
+
+# Profitero
+profitero.com
+
+# Sniffie
+sniffie.io
+
+# Paarly
+paarly.com
+
+# Minderest
+minderest.com
+
+# PriceBeam
+pricebeam.com
+
+# Pricemoov
+pricemoov.com
+
+# Feedvisor
+feedvisor.com
+
+# Boomerang Commerce
+boomerangcommerce.com
+
+# Intelligence Node
+intelligencenode.com
+
+# DataWeave
+dataweave.com
+
+# Incompetitor (now part of Connexity)
+connexity.com
+
+# Wiser / Salsify (product content)
+salsify.com
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORY 2: A/B TESTING AND PERSONALISATION PLATFORMS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Optimizely
+optimizely.com
+optimizelabs.com
+
+# Adobe Target / Adobe Experience Cloud
+adobetarget.com
+omtrdc.net
+demdex.net
+2o7.net
+everesttech.net
+adobedtm.com
+adobedc.net
+
+# Dynamic Yield (Mastercard)
+dynamic-yield.com
+dy-api.com
+
+# Monetate / Kibo Commerce
+monetate.com
+monetate.net
+
+# Qubit
+qubit.com
+goqubit.com
+qubitproducts.com
+
+# Evergage / Salesforce Interaction Studio
+evergage.com
+
+# VWO / Wingify
+vwo.com
+visualwebsiteoptimizer.com
+wingify.com
+wingify-ci.com
+
+# AB Tasty
+abtasty.com
+
+# Kameleoon
+kameleoon.com
+
+# Convert
+convert.com
+
+# Conductrics
+conductrics.com
+
+# Sitespect
+sitespect.com
+
+# Intellimize
+intellimize.com
+
+# Certona / Kibo
+certona.com
+certona.net
+
+# Barilliance
+barilliance.com
+barilliance.net
+
+# Rich Relevance (Sitecore Discover)
+richrelevance.com
+
+# Nosto
+nosto.com
+
+# Segmentify
+segmentify.com
+
+# Bloomreach / Exponea
+bloomreach.com
+bloomreach.io
+exponea.com
+
+# Emarsys (SAP)
+emarsys.com
+emarsys.net
+scarabresearch.com
+
+# Attraqt / Fredhopper
+attraqt.com
+fredhopper.com
+fh-api.com
+
+# Findologic
+findologic.com
+
+# Coveo
+coveo.com
+coveops.com
+
+# Insider / Useinsider
+useinsider.com
+ins.buzz
+ingage.io
+
+# Personyze
+personyze.com
+
+# CleverTap / Leanplum
+clevertap.com
+wzrkt.com
+leanplum.com
+
+# Braze
+braze.com
+braze.eu
+appboy.com
+
+# Taplytics
+taplytics.com
+
+# FullStory
+fullstory.com
+
+# Hotjar
+hotjar.com
+
+# Mouseflow
+mouseflow.com
+
+# Contentsquare / ClickTale
+contentsquare.com
+clicktale.net
+clicktale.com
+cs-i.com
+
+# Medallia / Decibel Insight
+medallia.com
+decibel.com
+dbi.io
+
+# Salesforce Marketing Cloud / Krux DMP
+krux.com
+kxcdn.com
+exacttarget.com
+pardot.com
+
+# Amplitude
+amplitude.com
+
+# Mixpanel
+mixpanel.com
+
+# Heap Analytics
+heap.io
+heapanalytics.com
+
+# Pendo
+pendo.io
+
+# LaunchDarkly (feature flags)
+launchdarkly.com
+ldapi.us
+
+# Split.io (feature flags / experimentation)
+split.io
+
+# Statsig
+statsig.com
+
+# Eppo (experimentation)
+geteppo.com
+
+# Mutiny (personalization for B2B)
+mutinyhq.com
+
+# Proof (personalization)
+proof.com
+useproof.com
+
+# Ninetailed (personalization)
+ninetailed.io
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORY 3: DATA BROKERS THAT FEED PRICING ALGORITHMS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Acxiom
+acxiom.com
+acxiom.co.uk
+acxiom.de
+acxiom.fr
+acxiom.com.au
+acxiomdigital.com
+recognicorp.com
+
+# LiveRamp
+liveramp.com
+liveramp.co.uk
+liveramp.de
+liveramp.fr
+liveramp.com.au
+rlcdn.com
+pippio.com
+connectid.net
+faktor.io
+absorbent.net
+
+# Oracle Data Cloud (BlueKai, Datalogix, AddThis)
+bluekai.com
+bkrtx.com
+addthis.com
+clearspring.com
+datalogix.com
+oracleinfinity.io
+eloqua.com
+en25.com
+responsys.net
+
+# Experian Marketing Services
+experian.com
+experian.co.uk
+experian.com.au
+experian.com.br
+experianmarketingservices.com
+hitwise.com
+edq.com
+qas.com
+
+# TransUnion / Neustar
+neustar.biz
+neustar.com
+transunion.com
+
+# Equifax
+equifax.com
+equifax.co.uk
+efxdata.com
+
+# Epsilon / Publicis
+epsilon.com
+conversant.com
+mediaplex.com
+valueclick.com
+dotomi.com
+
+# Lotame
+lotame.com
+lotame.io
+crwdcntrl.net
+
+# Eyeota
+eyeota.com
+eyeota.net
+
+# Tapad
+tapad.com
+
+# Nielsen Marketing Cloud / eXelate
+exelate.com
+exelate.info
+nlsndirect.com
+mrpdata.net
+
+# Comscore
+scorecardresearch.com
+imrworldwide.com
+
+# Merkle (Dentsu)
+merkleinc.com
+merkle.com
+
+# Dunnhumby
+dunnhumby.com
+
+# 84.51° (Kroger)
+8451.com
+
+# Kantar
+kantar.com
+kantarmedia.com
+worldpanel.com
+
+# IRI / Circana
+iriworldwide.com
+iri.com
+circana.com
+
+# Criteo
+criteo.com
+criteo.net
+criteo.us
+emailretargeting.com
+
+# The Trade Desk
+thetradedesk.com
+adsrvr.org
+
+# 33Across
+33across.com
+
+# Throtle
+throtle.io
+
+# ID5
+id5.io
+id5-sync.com
+
+# Samba TV
+samba.tv
+sambatvd.com
+
+# Alphonso (LG Ads)
+alphonso.tv
+alphonso.us
+
+# CoreLogic
+corelogic.com
+dataquick.com
+teletrack.com
+
+# Drawbridge (LinkedIn)
+drawbridge.com
+
+# Zeotap
+zeotap.com
+
+# Adform
+adform.net
+adform.com
+
+# AuDigent
+audigent.com
+
+# Bombora (B2B intent data)
+bombora.com
+
+# Dstillery
+dstillery.com
+
+# Peer39
+peer39.com
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORY 4: INSURANCE PRICING DATA FEEDS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# LexisNexis Risk Solutions
+lexisnexisrisk.com
+accurint.com
+seisint.com
+choicepoint.com
+clue.com
+riskview.com
+lexid.com
+hireright.com
+
+# Verisk Analytics
+verisk.com
+verisk.co.uk
+verisk.com.au
+iso.com
+drivefactor.com
+argus-advisory.com
+
+# Wood Mackenzie (Verisk)
+woodmac.com
+wood-mackenzie.com
+
+# CCC Intelligent Solutions
+cccis.com
+cccone.com
+
+# Solera / Audatex
+solera.com
+audatex.com
+audatex.co.uk
+audanet.com
+qapter.com
+autosource.com
+hollander.com
+
+# Mitchell International
+mitchell.com
+mitchellrepair.com
+
+# Arity (Allstate subsidiary)
+arity.com
+
+# Cambridge Mobile Telematics
+cmtelematics.com
+drivewell.com
+
+# Octo Telematics
+octotelematics.com
+octo.com
+
+# Ingenie
+ingenie.com
+
+# FICO
+fico.com
+ficoanalyticcloud.com
+
+# TLO (TransUnion)
+tlo.com
+
+# Guidewire
+guidewire.com
+guidewire.net
+
+# Claims and Underwriting Exchange
+cue.co.uk
+claimsportal.org.uk
+
+# Hunter (UK fraud detection)
+hunteruk.com
+
+# Polaris (UK insurance network)
+polaris.co.uk
