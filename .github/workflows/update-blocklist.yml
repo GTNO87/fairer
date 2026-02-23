@@ -5,6 +5,9 @@ on:
     - cron: '0 2 * * *'  # Runs daily at 2am
   workflow_dispatch:      # Allows manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   update-blocklist:
     runs-on: ubuntu-latest
