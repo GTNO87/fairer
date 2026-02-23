@@ -1,0 +1,36 @@
+name: Update Fairer Blocklist
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Runs daily at 2am
+  workflow_dispatch:      # Allows manual trigger
+
+jobs:
+  update-blocklist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install requests dnspython
+        
+      - name: Run blocklist builder
+        run: python scripts/build_blocklist.py
+        
+      - name: Sign blocklist
+        env:
+          SIGNING_KEY: ${{ secrets.BLOCKLIST_SIGNING_KEY }}
+        run: python scripts/sign_blocklist.py
+        
+      - name: Commit updated blocklist
+        run: |
+          git config user.name "Fairer Bot"
+          git config user.email "bot@fairer.app"
+          git add app/src/main/assets/blocklists/
+          git diff --staged --quiet || git commit -m "Auto-update blocklist $(date +%Y-%m-%d)"
+          git push
