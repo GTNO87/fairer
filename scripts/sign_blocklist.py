@@ -190,7 +190,9 @@ def cmd_sign() -> None:
     seed = load_seed_from_env()
     public_key = public_key_from_seed(seed)
 
-    blocklist_bytes = BLOCKLIST_FILE.read_bytes()
+    # Normalise to LF so the signature matches what GitHub raw serves,
+    # regardless of local line-ending settings (e.g. git autocrlf on Windows).
+    blocklist_bytes = BLOCKLIST_FILE.read_bytes().replace(b'\r\n', b'\n')
     signature = sign(blocklist_bytes, seed)
 
     # Self-verify before writing — catch key/data mismatch immediately.
@@ -218,7 +220,7 @@ def cmd_verify() -> None:
     seed = load_seed_from_env()
     public_key = public_key_from_seed(seed)
 
-    blocklist_bytes = BLOCKLIST_FILE.read_bytes()
+    blocklist_bytes = BLOCKLIST_FILE.read_bytes().replace(b'\r\n', b'\n')
     signature = read_sig_file(SIG_FILE)
 
     if verify(blocklist_bytes, signature, public_key):
