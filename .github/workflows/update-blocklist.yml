@@ -24,7 +24,7 @@ jobs:
         
       - name: Sign blocklist
         env:
-          SIGNING_KEY: ${{ secrets.BLOCKLIST_SIGNING_KEY }}
+          BLOCKLIST_SIGNING_KEY: ${{ secrets.BLOCKLIST_SIGNING_KEY }}
         run: python scripts/sign_blocklist.py
         
       - name: Commit updated blocklist
