@@ -2,6 +2,7 @@ package com.gtno.fairer.data
 
 import android.content.Context
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 
 internal object BlocklistManager {
@@ -14,9 +15,22 @@ internal object BlocklistManager {
         val catMap = HashMap<String, String>(65536)
         var currentCategory = "Other"
 
+        val internalFile = File(context.filesDir, "blocklists/manipulation-blocklist.txt")
+        val stream = if (internalFile.exists()) {
+            internalFile.inputStream()
+        } else {
+            try {
+                context.assets.open("blocklists/manipulation-blocklist.txt")
+            } catch (_: Exception) {
+                blocked = set
+                categories = catMap
+                return
+            }
+        }
+
         try {
-            context.assets.open("blocklists/manipulation-blocklist.txt").use { stream ->
-                BufferedReader(InputStreamReader(stream)).use { reader ->
+            stream.use { s ->
+                BufferedReader(InputStreamReader(s)).use { reader ->
                     reader.lineSequence()
                         .map { it.trim() }
                         .filter { it.isNotEmpty() }
@@ -71,6 +85,9 @@ internal object BlocklistManager {
         }
         return false
     }
+
+    /** Returns the number of domains currently loaded. */
+    fun domainCount(): Int = blocked.size
 
     /**
      * Returns the category for a blocked domain, walking up the hierarchy
