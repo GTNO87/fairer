@@ -8,17 +8,29 @@ import android.net.VpnService
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.gtno.fairer.data.BlockLog
+import com.gtno.fairer.data.BlocklistUpdater
+import com.gtno.fairer.data.UpdatePrefs
 import com.gtno.fairer.databinding.ActivityMainBinding
 import com.gtno.fairer.vpn.FairerVpnService
+import com.gtno.fairer.worker.BlocklistUpdateWorker
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var isUpdating = false
 
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -46,6 +58,10 @@ class MainActivity : AppCompatActivity() {
         binding.logButton.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
+
+        binding.updateButton.setOnClickListener { startManualUpdate() }
+
+        scheduleWeeklyUpdate()
     }
 
     override fun onResume() {
@@ -77,6 +93,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.blockedCount.text =
             NumberFormat.getNumberInstance().format(BlockLog.count)
+
+        val lastMs = UpdatePrefs.getLastUpdated(this)
+        binding.lastUpdatedText.text = if (lastMs == 0L) {
+            getString(R.string.last_updated_never)
+        } else {
+            getString(
+                R.string.last_updated_date,
+                SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(lastMs))
+            )
+        }
     }
 
     private fun requestVpn() {
@@ -97,6 +123,41 @@ class MainActivity : AppCompatActivity() {
             android.content.Intent(this, FairerVpnService::class.java).apply {
                 action = FairerVpnService.ACTION_STOP
             }
+        )
+    }
+
+    private fun startManualUpdate() {
+        if (isUpdating) return
+        isUpdating = true
+        binding.updateButton.isEnabled = false
+        binding.updateStatusText.visibility = View.VISIBLE
+        binding.updateStatusText.text = getString(R.string.update_checking)
+
+        Thread {
+            val result = BlocklistUpdater.update(this)
+            runOnUiThread {
+                isUpdating = false
+                binding.updateButton.isEnabled = true
+                binding.updateStatusText.text = when (result) {
+                    is BlocklistUpdater.Result.Success ->
+                        getString(
+                            R.string.update_success,
+                            NumberFormat.getNumberInstance().format(result.domainCount)
+                        )
+                    is BlocklistUpdater.Result.Failure ->
+                        getString(R.string.update_failed, result.reason)
+                }
+                refreshUi()
+            }
+        }.start()
+    }
+
+    private fun scheduleWeeklyUpdate() {
+        val request = PeriodicWorkRequestBuilder<BlocklistUpdateWorker>(7, TimeUnit.DAYS).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "blocklist_update",
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
         )
     }
 }

@@ -88,12 +88,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="32dp"
         android:background="@drawable/bg_stats_card"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingTop="28dp"
-        android:paddingBottom="28dp"
+        android:paddingBottom="24dp"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
         app:layout_constraintBottom_toTopOf="@id/versionText"
@@ -120,6 +120,49 @@
             android:textAllCaps="true"
             android:textColor="#A6FFFFFF"
             android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/lastUpdatedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/jost_regular"
+            android:text="@string/last_updated_never"
+            android:textColor="#60FFFFFF"
+            android:textSize="11sp" />
+
+        <View
+            android:layout_width="32dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="4dp"
+            android:alpha="0.15"
+            android:background="#FFFFFF" />
+
+        <Button
+            android:id="@+id/updateButton"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/jost_regular"
+            android:letterSpacing="0.18"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/update_lists"
+            android:textAllCaps="true"
+            android:textColor="#A6FFFFFF"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/updateStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/jost_regular"
+            android:textColor="#60FFFFFF"
+            android:textSize="11sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

@@ -6,4 +6,10 @@
     <string name="status_active">protection active</string>
     <string name="status_inactive">protection inactive</string>
     <string name="version">v1.1.0</string>
+    <string name="update_lists">update lists</string>
+    <string name="update_checking">checking for updates…</string>
+    <string name="update_success">%1$s domains loaded</string>
+    <string name="update_failed">update failed: %1$s</string>
+    <string name="last_updated_never">lists never updated</string>
+    <string name="last_updated_date">updated %1$s</string>
 </resources>
