@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Fairer</string>
-    <string name="tagline">The internet, fairer.</string>
-    <string name="blocked_label">commercial tracking requests blocked today</string>
-    <string name="version">v1.0.0</string>
+    <string name="tagline">the internet, fairer</string>
+    <string name="blocked_label">blocked today</string>
+    <string name="status_active">protection active</string>
+    <string name="status_inactive">protection inactive</string>
+    <string name="version">v1.1.0</string>
 </resources>

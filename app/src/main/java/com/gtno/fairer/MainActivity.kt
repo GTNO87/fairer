@@ -1,12 +1,17 @@
 package com.gtno.fairer
 
 import android.app.Activity
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.VpnService
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.gtno.fairer.data.BlockLog
 import com.gtno.fairer.databinding.ActivityMainBinding
 import com.gtno.fairer.vpn.FairerVpnService
 import java.text.NumberFormat
@@ -14,18 +19,11 @@ import java.text.NumberFormat
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var programmaticToggle = false
 
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            startVpn()
-        } else {
-            programmaticToggle = true
-            binding.toggle.isChecked = false
-            programmaticToggle = false
-        }
+        if (result.resultCode == Activity.RESULT_OK) startVpn()
     }
 
     private val refreshHandler = Handler(Looper.getMainLooper())
@@ -41,9 +39,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.toggle.setOnCheckedChangeListener { _, isChecked ->
-            if (programmaticToggle) return@setOnCheckedChangeListener
-            if (isChecked) requestVpn() else stopVpn()
+        binding.powerButton.setOnClickListener {
+            if (FairerVpnService.isRunning) stopVpn() else requestVpn()
+        }
+
+        binding.logButton.setOnClickListener {
+            startActivity(Intent(this, LogActivity::class.java))
         }
     }
 
@@ -58,11 +59,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshUi() {
-        programmaticToggle = true
-        binding.toggle.isChecked = FairerVpnService.isRunning
-        programmaticToggle = false
+        val active = FairerVpnService.isRunning
+
+        if (active) {
+            binding.powerButton.setBackgroundResource(R.drawable.bg_power_button_active)
+            binding.powerButton.imageTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal_primary))
+        } else {
+            binding.powerButton.setBackgroundResource(R.drawable.bg_power_button_inactive)
+            binding.powerButton.imageTintList =
+                ColorStateList.valueOf(Color.WHITE)
+        }
+
+        binding.statusText.text = getString(
+            if (active) R.string.status_active else R.string.status_inactive
+        )
+
         binding.blockedCount.text =
-            NumberFormat.getNumberInstance().format(FairerVpnService.todayBlocked.get())
+            NumberFormat.getNumberInstance().format(BlockLog.count)
     }
 
     private fun requestVpn() {

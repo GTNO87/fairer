@@ -23,14 +23,16 @@ internal object DnsInterceptor {
     /**
      * Process one raw IPv4 packet [buf] of [length] bytes.
      *
-     * [onBlocked] is called (on a worker thread) when a domain is blocked.
+     * [onBlocked] is called (on a worker thread) when a domain is blocked,
+     * receiving the domain name, its blocklist category, and the UDP source
+     * port (used for app attribution via /proc/net/udp).
      *
      * Returns the response IP packet to write back to the TUN fd, or null to drop.
      */
     fun handle(
         buf: ByteArray,
         length: Int,
-        onBlocked: () -> Unit,
+        onBlocked: (domain: String, category: String, srcPort: Int, srcIp: ByteArray) -> Unit,
     ): ByteArray? {
         // ── Require IPv4 ───────────────────────────────────────────────────────
         if (length < 28) return null
@@ -65,7 +67,7 @@ internal object DnsInterceptor {
 
         // ── Block or forward ──────────────────────────────────────────────────
         return if (BlocklistManager.isBlocked(domain)) {
-            onBlocked()
+            onBlocked(domain, BlocklistManager.getCategoryFor(domain), srcPort, clientIp)
             buildPacket(srcPort, clientIp, fakeIp, nxdomainDns(buf, dnsBase, dnsLen))
         } else {
             val dnsQuery = buf.copyOfRange(dnsBase, dnsBase + dnsLen)

@@ -1,70 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
 
+    <!-- Subtle log button, top-right corner -->
+    <ImageButton
+        android:id="@+id/logButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:alpha="0.55"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="view blocked request log"
+        android:padding="8dp"
+        android:src="@drawable/ic_log"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title pinned to top -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:fontFamily="@font/jost_light"
+        android:letterSpacing="-0.02"
+        android:text="fairer"
+        android:textColor="#FFFFFF"
+        android:textSize="72sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Power button: centered in the full screen height -->
+    <FrameLayout
+        android:id="@+id/powerButtonContainer"
+        android:layout_width="144dp"
+        android:layout_height="144dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.46">
+
+        <!-- Outer glow ring -->
+        <View
+            android:layout_width="144dp"
+            android:layout_height="144dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_power_ring" />
+
+        <!-- Inner button -->
+        <ImageButton
+            android:id="@+id/powerButton"
+            android:layout_width="108dp"
+            android:layout_height="108dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_power_button_inactive"
+            android:contentDescription="toggle protection"
+            android:padding="26dp"
+            android:src="@drawable/ic_power" />
+
+    </FrameLayout>
+
+    <!-- Status text: centered in the gap between button and card -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jost_regular"
+        android:text="@string/status_inactive"
+        android:textColor="#A6FFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/powerButtonContainer"
+        app:layout_constraintBottom_toTopOf="@id/statsCard"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <!-- Frosted stats card anchored to bottom -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:id="@+id/statsCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="72dp"
+        android:background="@drawable/bg_stats_card"
         android:gravity="center"
-        android:padding="40dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="52sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:letterSpacing="-0.02" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="@string/tagline"
-            android:textSize="16sp"
-            android:textColor="@color/text_secondary" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:showText="false" />
+        android:orientation="vertical"
+        android:paddingTop="28dp"
+        android:paddingBottom="28dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        app:layout_constraintBottom_toTopOf="@id/versionText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/blockedCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="56dp"
+            android:fontFamily="@font/jost_light"
+            android:includeFontPadding="false"
             android:text="0"
-            android:textSize="52sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary" />
+            android:textColor="#FFFFFF"
+            android:textSize="56sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/jost_regular"
+            android:letterSpacing="0.18"
             android:text="@string/blocked_label"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary" />
+            android:textAllCaps="true"
+            android:textColor="#A6FFFFFF"
+            android:textSize="11sp" />
 
     </LinearLayout>
 
+    <!-- Version pinned to very bottom -->
     <TextView
         android:id="@+id/versionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="@font/jost_regular"
         android:text="@string/version"
+        android:textColor="#60FFFFFF"
         android:textSize="12sp"
-        android:textColor="@color/text_secondary" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

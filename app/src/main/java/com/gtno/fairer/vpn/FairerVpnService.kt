@@ -11,8 +11,10 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import androidx.core.app.NotificationCompat
 import com.gtno.fairer.MainActivity
+import com.gtno.fairer.data.AppResolver
+import com.gtno.fairer.data.BlockEvent
+import com.gtno.fairer.data.BlockLog
 import com.gtno.fairer.data.BlocklistManager
-import com.gtno.fairer.data.DailyStats
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -20,7 +22,6 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.RejectedExecutionException
-import java.util.concurrent.atomic.AtomicInteger
 
 class FairerVpnService : VpnService() {
 
@@ -29,10 +30,6 @@ class FairerVpnService : VpnService() {
         const val ACTION_STOP  = "com.gtno.fairer.STOP"
 
         @Volatile var isRunning = false
-
-        // AtomicInteger ensures increment from concurrent DNS worker threads is
-        // never lost — @Volatile Int with ++ is a non-atomic read-modify-write.
-        val todayBlocked = AtomicInteger(0)
 
         private const val VPN_ADDRESS   = "10.111.111.1"
         private const val VPN_SUBNET    = "10.111.111.0"
@@ -92,8 +89,6 @@ class FairerVpnService : VpnService() {
         }
         pfd = established
 
-        DailyStats.resetIfNewDay(applicationContext)
-        todayBlocked.set(DailyStats.getCount(applicationContext))
         BlocklistManager.load(applicationContext)
 
         dnsExecutor = ThreadPoolExecutor(
@@ -129,7 +124,14 @@ class FairerVpnService : VpnService() {
                         val response = DnsInterceptor.handle(
                             buf       = packet,
                             length    = packet.size,
-                            onBlocked = { todayBlocked.incrementAndGet() },
+                            onBlocked = { domain, category, srcPort, srcIp ->
+                                try {
+                                    val (appName, pkg) = AppResolver.resolve(srcPort, srcIp, packageManager)
+                                    BlockLog.add(BlockEvent(domain, category, appName, pkg))
+                                } catch (_: Exception) {
+                                    BlockLog.add(BlockEvent(domain, category, "Unknown", "unknown"))
+                                }
+                            },
                         ) ?: return@execute
 
                         synchronized(writeLock) {
@@ -149,7 +151,6 @@ class FairerVpnService : VpnService() {
 
     private fun stopVpn() {
         isRunning = false
-        DailyStats.save(applicationContext, todayBlocked.get())
         dnsExecutor?.shutdownNow()
         dnsExecutor = null
         pfd?.close()
@@ -164,7 +165,6 @@ class FairerVpnService : VpnService() {
     override fun onDestroy() {
         if (isRunning || pfd != null) {
             isRunning = false
-            DailyStats.save(applicationContext, todayBlocked.get())
             dnsExecutor?.shutdownNow()
             dnsExecutor = null
             pfd?.close()
