@@ -1,8 +1,8 @@
 # Fairer
 
-**The internet, fairer.**
 
-Fairer is a free, open-source Android app that protects you from predatory commercial data practices — the kind that result in you being charged more than someone else for the same product, or shown different prices based on what algorithms have inferred about your willingness to pay.
+
+Fairer is my attempt at a free, open-source Android app that protects you from predatory commercial data practices — the kind that result in you being charged more than someone else for the same product, or shown different prices based on what algorithms have inferred about your willingness to pay.
 
 ---
 
