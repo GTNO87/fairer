@@ -20,6 +20,14 @@ internal object BlocklistUpdater {
     private const val CONNECT_TIMEOUT_MS = 10_000
     private const val READ_TIMEOUT_MS    = 30_000
 
+    // Community-maintained lists — no signature verification required.
+    // Failures are non-fatal: a list that fails to download is skipped for this update cycle.
+    private val COMMUNITY_SOURCES = listOf(
+        "community-disconnect.txt"  to "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
+        "community-hagezi.txt"      to "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/pro.txt",
+        "community-easyprivacy.txt" to "https://v.firebog.net/hosts/Easyprivacy.txt"
+    )
+
     sealed class Result {
         data class Success(val domainCount: Int) : Result()
         data class Failure(val reason: String)  : Result()
@@ -49,6 +57,13 @@ internal object BlocklistUpdater {
         val dir = File(context.filesDir, "blocklists")
         dir.mkdirs()
         File(dir, "manipulation-blocklist.txt").writeBytes(blocklistBytes)
+
+        // Download community lists (no signature verification).
+        // Each is written only on success so a stale cached copy is never overwritten with nothing.
+        for ((filename, url) in COMMUNITY_SOURCES) {
+            val bytes = download(url)
+            if (bytes != null) File(dir, filename).writeBytes(bytes)
+        }
 
         BlocklistManager.load(context)
         UpdatePrefs.setLastUpdated(context)

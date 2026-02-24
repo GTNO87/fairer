@@ -3,6 +3,7 @@ package com.gtno.fairer.data
 import android.content.Context
 import java.io.BufferedReader
 import java.io.File
+import java.io.InputStream
 import java.io.InputStreamReader
 
 internal object BlocklistManager {
@@ -10,24 +11,49 @@ internal object BlocklistManager {
     @Volatile private var blocked: HashSet<String> = hashSetOf()
     @Volatile private var categories: HashMap<String, String> = hashMapOf()
 
-    fun load(context: Context) {
-        val set    = HashSet<String>(65536)
-        val catMap = HashMap<String, String>(65536)
-        var currentCategory = "Other"
+    // Filenames must match those defined in BlocklistUpdater.COMMUNITY_SOURCES.
+    private val COMMUNITY_FILENAMES = listOf(
+        "community-disconnect.txt",
+        "community-hagezi.txt",
+        "community-easyprivacy.txt"
+    )
 
-        val internalFile = File(context.filesDir, "blocklists/manipulation-blocklist.txt")
-        val stream = if (internalFile.exists()) {
-            internalFile.inputStream()
+    fun load(context: Context) {
+        val set    = HashSet<String>(131072)
+        val catMap = HashMap<String, String>(131072)
+
+        // Fairer unique list — internal storage first, fall back to bundled asset.
+        val fairerFile = File(context.filesDir, "blocklists/manipulation-blocklist.txt")
+        val fairerStream: InputStream? = if (fairerFile.exists()) {
+            fairerFile.inputStream()
         } else {
-            try {
-                context.assets.open("blocklists/manipulation-blocklist.txt")
-            } catch (_: Exception) {
-                blocked = set
-                categories = catMap
-                return
-            }
+            try { context.assets.open("blocklists/manipulation-blocklist.txt") }
+            catch (_: Exception) { null }
+        }
+        if (fairerStream != null) parseStream(fairerStream, set, catMap)
+
+        // Community lists — internal storage only (no asset fallback).
+        // Only loaded after a successful update has written them to disk.
+        for (name in COMMUNITY_FILENAMES) {
+            val file = File(context.filesDir, "blocklists/$name")
+            if (file.exists()) parseStream(file.inputStream(), set, catMap)
         }
 
+        blocked    = set
+        categories = catMap
+    }
+
+    /**
+     * Parses domains from [stream] into [set], tracking category comments of the form
+     * "# VendorName — description" into [catMap]. Supports both plain-domain and
+     * hosts-file ("0.0.0.0 domain.com") formats.
+     */
+    private fun parseStream(
+        stream: InputStream,
+        set: HashSet<String>,
+        catMap: HashMap<String, String>
+    ) {
+        var currentCategory = "Other"
         try {
             stream.use { s ->
                 BufferedReader(InputStreamReader(s)).use { reader ->
@@ -67,11 +93,8 @@ internal object BlocklistManager {
                 }
             }
         } catch (_: Exception) {
-            // No blocklist file — block nothing
+            // Skip unreadable stream — partial results from other files are still used.
         }
-
-        blocked    = set
-        categories = catMap
     }
 
     /** Returns true if [domain] or any parent domain is in the blocklist. */
