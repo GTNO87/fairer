@@ -2,7 +2,7 @@
 
 ** [fairer.gtno87.io](https://gtno87.github.io/fairer) · Free · Open source · Android
 
-Fairer is a free, open-source Android app that protects you from the hidden commercial data infrastructure that tracks your behaviour, builds profiles about you. It works at the DNS level — blocking tracking and manipulation platforms before they can exchange a single byte with your device.
+fairer is a free, open-source Android app that protects you from the hidden commercial data infrastructure that tracks your behaviour, builds profiles about you. It works at the DNS level — blocking tracking and manipulation platforms before they can exchange a single byte with your device.
 
 ---
 
