@@ -12,12 +12,15 @@ internal object BlocklistManager {
     @Volatile private var categories: HashMap<String, String> = hashMapOf()
 
     // Filenames must match those defined in BlocklistUpdater.COMMUNITY_SOURCES.
-    private val COMMUNITY_FILENAMES = listOf(
-        "community-disconnect.txt",
-        "community-hagezi.txt",
-        "community-hagezi-native.txt",
-        "community-easyprivacy.txt",
-        "community-fanboy-social.txt"
+    // The category string is used as the default for every domain in that file —
+    // community lists don't use the Fairer em-dash header convention, so without
+    // a default every entry would fall back to "Other".
+    private val COMMUNITY_FILES = listOf(
+        "community-disconnect.txt"    to "Tracking",
+        "community-hagezi.txt"        to "Tracking",
+        "community-hagezi-native.txt" to "Native Tracking",
+        "community-easyprivacy.txt"   to "Tracking",
+        "community-fanboy-social.txt" to "Social",
     )
 
     fun load(context: Context) {
@@ -36,9 +39,9 @@ internal object BlocklistManager {
 
         // Community lists — internal storage only (no asset fallback).
         // Only loaded after a successful update has written them to disk.
-        for (name in COMMUNITY_FILENAMES) {
+        for ((name, defaultCategory) in COMMUNITY_FILES) {
             val file = File(context.filesDir, "blocklists/$name")
-            if (file.exists()) parseStream(file.inputStream(), set, catMap)
+            if (file.exists()) parseStream(file.inputStream(), set, catMap, defaultCategory)
         }
 
         blocked    = set
@@ -53,9 +56,10 @@ internal object BlocklistManager {
     private fun parseStream(
         stream: InputStream,
         set: HashSet<String>,
-        catMap: HashMap<String, String>
+        catMap: HashMap<String, String>,
+        defaultCategory: String = "Other",
     ) {
-        var currentCategory = "Other"
+        var currentCategory = defaultCategory
         try {
             stream.use { s ->
                 BufferedReader(InputStreamReader(s)).use { reader ->

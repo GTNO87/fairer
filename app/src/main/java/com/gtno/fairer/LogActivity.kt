@@ -150,7 +150,7 @@ class LogActivity : AppCompatActivity() {
         sb.appendLine("Exported: $now")
         sb.appendLine()
         entries.forEach { entry ->
-            sb.appendLine("${entry.domain} — ${entry.category} — ×${entry.count}")
+            sb.appendLine("${entry.domain} - ${entry.category} - x${entry.count}")
         }
         sb.appendLine()
         sb.appendLine("${BlockLog.count} total blocked this session")
@@ -160,7 +160,7 @@ class LogActivity : AppCompatActivity() {
         val dateTag = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val file = File(exportDir, "fairer-log-$dateTag.txt")
         try {
-            file.writeText(sb.toString())
+            file.writeText(sb.toString(), Charsets.UTF_8)
         } catch (_: Exception) {
             return
         }
