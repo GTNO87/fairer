@@ -15,7 +15,9 @@ internal object BlocklistManager {
     private val COMMUNITY_FILENAMES = listOf(
         "community-disconnect.txt",
         "community-hagezi.txt",
-        "community-easyprivacy.txt"
+        "community-hagezi-native.txt",
+        "community-easyprivacy.txt",
+        "community-fanboy-social.txt"
     )
 
     fun load(context: Context) {

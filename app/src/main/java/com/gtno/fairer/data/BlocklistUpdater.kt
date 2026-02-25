@@ -23,9 +23,11 @@ internal object BlocklistUpdater {
     // Community-maintained lists — no signature verification required.
     // Failures are non-fatal: a list that fails to download is skipped for this update cycle.
     private val COMMUNITY_SOURCES = listOf(
-        "community-disconnect.txt"  to "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
-        "community-hagezi.txt"      to "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/pro.txt",
-        "community-easyprivacy.txt" to "https://v.firebog.net/hosts/Easyprivacy.txt"
+        "community-disconnect.txt"    to "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
+        "community-hagezi.txt"        to "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/pro.txt",
+        "community-hagezi-native.txt" to "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/native.txt",
+        "community-easyprivacy.txt"   to "https://v.firebog.net/hosts/Easyprivacy.txt",
+        "community-fanboy-social.txt" to "https://secure.fanboy.co.nz/fanboy-social.txt"
     )
 
     sealed class Result {
