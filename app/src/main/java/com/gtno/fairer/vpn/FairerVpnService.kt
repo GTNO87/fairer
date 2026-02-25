@@ -50,7 +50,7 @@ class FairerVpnService : VpnService() {
 
     private var pfd: ParcelFileDescriptor? = null
     private var vpnThread: Thread? = null
-    private var dnsExecutor: ThreadPoolExecutor? = null
+    @Volatile private var dnsExecutor: ThreadPoolExecutor? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {

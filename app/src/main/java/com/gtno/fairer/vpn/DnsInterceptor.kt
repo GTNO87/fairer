@@ -1,8 +1,9 @@
 package com.gtno.fairer.vpn
 
 import com.gtno.fairer.data.BlocklistManager
-import javax.net.ssl.HttpsURLConnection
+import java.io.ByteArrayOutputStream
 import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 /**
  * Stateless DNS interceptor. Called once per IP packet, potentially from
@@ -19,6 +20,10 @@ internal object DnsInterceptor {
 
     // RFC 1035 §3.1: total domain name ≤ 253 characters.
     private const val MAX_DOMAIN_LEN = 253
+
+    // DNS response size ceiling. RFC 1035 §4.2.1 caps UDP DNS at 512 bytes; EDNS0 extends
+    // this to 64 KB; DoH can carry the full EDNS0 payload. 64 KB is a safe upper bound.
+    private const val MAX_DOH_RESPONSE_BYTES = 65_535
 
     /**
      * Process one raw IPv4 packet [buf] of [length] bytes.
@@ -134,7 +139,17 @@ internal object DnsInterceptor {
                 return null
             }
 
-            val response = conn.inputStream.use { it.readBytes() }
+            val response = conn.inputStream.use { input ->
+                val out = ByteArrayOutputStream()
+                val buf = ByteArray(4096)
+                while (true) {
+                    val n = input.read(buf)
+                    if (n < 0) break
+                    if (out.size() + n > MAX_DOH_RESPONSE_BYTES) return null  // abort oversized response
+                    out.write(buf, 0, n)
+                }
+                out.toByteArray()
+            }
             if (response.size < 2) return null
 
             // Validate that the response transaction ID matches the query.

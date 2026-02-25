@@ -89,7 +89,9 @@ internal object BlocklistManager {
                             // RFC 1035 §3.1 — skip malformed entries longer than 253 chars.
                             if (domain.isNotEmpty() && domain != "localhost" && domain.length <= 253) {
                                 set.add(domain)
-                                catMap[domain] = currentCategory
+                                // Skip storing "Other" — getCategoryFor() returns it as the default,
+                                // so persisting it wastes significant heap for large community lists.
+                                if (currentCategory != "Other") catMap[domain] = currentCategory
                             }
                         }
                 }

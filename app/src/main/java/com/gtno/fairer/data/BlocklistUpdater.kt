@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters
 import org.bouncycastle.crypto.signers.Ed25519Signer
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -19,6 +20,10 @@ internal object BlocklistUpdater {
 
     private const val CONNECT_TIMEOUT_MS = 10_000
     private const val READ_TIMEOUT_MS    = 30_000
+
+    // Response size caps — enforced during streaming to prevent OOM from oversized responses.
+    private const val MAX_BYTES_FAIRER    =  5_242_880  // 5 MB  — Fairer list is small by design
+    private const val MAX_BYTES_COMMUNITY = 52_428_800  // 50 MB — hosts files can be legitimately large
 
     // Community-maintained lists — no signature verification required.
     // Failures are non-fatal: a list that fails to download is skipped for this update cycle.
@@ -43,10 +48,10 @@ internal object BlocklistUpdater {
             return Result.Failure("invalid public key — rebuild with the correct key")
         }
 
-        val blocklistBytes = download(BLOCKLIST_URL)
+        val blocklistBytes = download(BLOCKLIST_URL, MAX_BYTES_FAIRER)
             ?: return Result.Failure("download failed — check your connection")
 
-        val sigBytes = download(SIG_URL)
+        val sigBytes = download(SIG_URL, MAX_BYTES_FAIRER)
             ?: return Result.Failure("signature download failed")
 
         val signature = parseSig(sigBytes)
@@ -58,13 +63,16 @@ internal object BlocklistUpdater {
 
         val dir = File(context.filesDir, "blocklists")
         dir.mkdirs()
-        File(dir, "manipulation-blocklist.txt").writeBytes(blocklistBytes)
+        writeAtomic(dir, "manipulation-blocklist.txt", blocklistBytes)
 
         // Download community lists (no signature verification).
-        // Each is written only on success so a stale cached copy is never overwritten with nothing.
+        // Written atomically so a failed mid-write never corrupts the cached copy.
+        // Individual failures are non-fatal.
         for ((filename, url) in COMMUNITY_SOURCES) {
-            val bytes = download(url)
-            if (bytes != null) File(dir, filename).writeBytes(bytes)
+            val bytes = download(url, MAX_BYTES_COMMUNITY)
+            if (bytes != null) {
+                try { writeAtomic(dir, filename, bytes) } catch (_: Exception) { }
+            }
         }
 
         BlocklistManager.load(context)
@@ -73,7 +81,12 @@ internal object BlocklistUpdater {
         return Result.Success(BlocklistManager.domainCount())
     }
 
-    private fun download(urlString: String): ByteArray? {
+    /**
+     * Downloads [urlString] over HTTPS, streaming into a buffer.
+     * Returns null if the response is not HTTP 200, exceeds [maxBytes], or any error occurs.
+     * The size cap is enforced during streaming — the JVM never buffers more than [maxBytes].
+     */
+    private fun download(urlString: String, maxBytes: Int): ByteArray? {
         return try {
             val conn = URL(urlString).openConnection() as HttpsURLConnection
             conn.connectTimeout = CONNECT_TIMEOUT_MS
@@ -83,10 +96,36 @@ internal object BlocklistUpdater {
                 conn.errorStream?.close()
                 return null
             }
-            conn.inputStream.use { it.readBytes() }
+            conn.inputStream.use { input ->
+                val out = ByteArrayOutputStream()
+                val buf = ByteArray(8192)
+                while (true) {
+                    val n = input.read(buf)
+                    if (n < 0) break
+                    if (out.size() + n > maxBytes) return null  // response too large — abort
+                    out.write(buf, 0, n)
+                }
+                out.toByteArray()
+            }
         } catch (_: Exception) {
             null
         }
+    }
+
+    /**
+     * Writes [bytes] to [filename] inside [dir] atomically via a temp file + rename.
+     * If [filename] already exists and the rename fails, falls back to a direct overwrite
+     * of the already-buffered bytes.
+     */
+    private fun writeAtomic(dir: File, filename: String, bytes: ByteArray) {
+        val dest = File(dir, filename)
+        val tmp  = File(dir, "$filename.tmp")
+        tmp.writeBytes(bytes)
+        if (!tmp.renameTo(dest)) {
+            // renameTo can fail on some filesystems — fall back to direct write
+            dest.writeBytes(bytes)
+        }
+        if (tmp.exists()) tmp.delete()
     }
 
     private fun parseSig(bytes: ByteArray): ByteArray? {
