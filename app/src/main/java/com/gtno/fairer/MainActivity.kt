@@ -1,10 +1,13 @@
 package com.gtno.fairer
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.VpnService
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -38,6 +41,13 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) startVpn()
     }
 
+    // Handles the POST_NOTIFICATIONS permission result on Android 13+.
+    // No UI update needed — the VPN foreground notification will appear automatically
+    // if permission was granted.
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* no-op */ }
+
     private val refreshHandler = Handler(Looper.getMainLooper())
     private val refreshTask = object : Runnable {
         override fun run() {
@@ -50,6 +60,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        requestNotificationPermission()
 
         binding.powerButton.setOnClickListener {
             if (FairerVpnService.isRunning) stopVpn() else requestVpn()
@@ -102,6 +114,15 @@ class MainActivity : AppCompatActivity() {
                 R.string.last_updated_date,
                 SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(lastMs))
             )
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 

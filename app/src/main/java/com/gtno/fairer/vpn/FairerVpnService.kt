@@ -31,10 +31,16 @@ class FairerVpnService : VpnService() {
 
         @Volatile var isRunning = false
 
-        private const val VPN_ADDRESS   = "10.111.111.1"
-        private const val VPN_SUBNET    = "10.111.111.0"
-        private const val FAKE_DNS_IP   = "10.111.111.111"
-        private const val SUBNET_PREFIX = 24
+        private const val VPN_ADDRESS    = "10.111.111.1"
+        private const val VPN_SUBNET     = "10.111.111.0"
+        private const val FAKE_DNS_IP    = "10.111.111.111"
+        private const val SUBNET_PREFIX  = 24
+
+        // IPv6: route only the fake DNS server address through the TUN so all other
+        // IPv6 traffic stays on the real network (same strategy as IPv4).
+        private const val VPN_ADDRESS_V6 = "fdab:fab0::1"
+        private const val FAKE_DNS_IP_V6 = "fdab:fab0::111"
+        private const val PREFIX_V6      = 128
 
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID      = "fairer_vpn"
@@ -80,6 +86,9 @@ class FairerVpnService : VpnService() {
             .addAddress(VPN_ADDRESS, SUBNET_PREFIX)
             .addRoute(VPN_SUBNET, SUBNET_PREFIX)
             .addDnsServer(FAKE_DNS_IP)
+            .addAddress(VPN_ADDRESS_V6, PREFIX_V6)
+            .addRoute(FAKE_DNS_IP_V6, PREFIX_V6)
+            .addDnsServer(FAKE_DNS_IP_V6)
             .setMtu(1500)
             .establish()
 
