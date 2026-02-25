@@ -25,7 +25,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="16dp"
-        android:alpha="0.55"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="share log"
         android:padding="8dp"
