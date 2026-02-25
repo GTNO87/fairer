@@ -1,8 +1,8 @@
-# Fairer
+# fairer
 
-**The internet, fairer.** · [fairer.gtno87.io](https://gtno87.github.io/fairer) · Free · Open source · Android
+** [fairer.gtno87.io](https://gtno87.github.io/fairer) · Free · Open source · Android
 
-Fairer is a free, open-source Android app that protects you from the hidden commercial data infrastructure that tracks your behaviour, builds profiles about you, and uses them to charge you more than someone else for the same thing. It works at the DNS level — blocking tracking and manipulation platforms before they can exchange a single byte with your device.
+Fairer is a free, open-source Android app that protects you from the hidden commercial data infrastructure that tracks your behaviour, builds profiles about you. It works at the DNS level — blocking tracking and manipulation platforms before they can exchange a single byte with your device.
 
 ---
 
