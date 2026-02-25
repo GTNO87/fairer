@@ -1,16 +1,20 @@
 package com.gtno.fairer
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.Gravity
+import android.view.Window
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.LinearLayout.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import com.gtno.fairer.data.BlockLog
@@ -35,7 +39,7 @@ class LogActivity : AppCompatActivity() {
         jostRegular = ResourcesCompat.getFont(this, R.font.jost_regular)
 
         binding.backButton.setOnClickListener { finish() }
-        binding.shareButton.setOnClickListener { exportLog() }
+        binding.shareButton.setOnClickListener { showExportConfirmation() }
         binding.clearButton.setOnClickListener {
             BlockLog.clear()
             renderLog()
@@ -50,6 +54,76 @@ class LogActivity : AppCompatActivity() {
     }
 
     // ── Export ─────────────────────────────────────────────────────────────────
+
+    private fun showExportConfirmation() {
+        if (BlockLog.getAll().isEmpty()) return
+
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundResource(R.drawable.bg_stats_card)
+            setPadding(dp(28), dp(28), dp(28), dp(12))
+        }
+
+        // Warning message
+        TextView(this).apply {
+            text = "This file contains domains your phone contacted today. Only share with people you trust."
+            typeface = jostRegular
+            textSize = 14f
+            setTextColor(Color.WHITE)
+            setLineSpacing(0f, 1.35f)
+            root.addView(this, MATCH_PARENT, WRAP_CONTENT)
+        }
+
+        // Button row — right-aligned: Cancel  Share
+        val buttonRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.END
+        }
+        val rowLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+            topMargin = dp(20)
+        }
+
+        fun dialogButton(label: String, onClick: () -> Unit): TextView {
+            val tv = TypedValue()
+            theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, tv, true)
+            return TextView(this).apply {
+                text = label
+                typeface = jostRegular
+                textSize = 12f
+                letterSpacing = 0.18f
+                isAllCaps = true
+                setTextColor(Color.argb(166, 255, 255, 255))
+                setPadding(dp(4), dp(12), dp(4), dp(12))
+                isClickable = true
+                isFocusable = true
+                if (tv.resourceId != 0) {
+                    background = ContextCompat.getDrawable(this@LogActivity, tv.resourceId)
+                }
+                setOnClickListener { onClick() }
+            }
+        }
+
+        val cancelLp = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+            marginEnd = dp(16)
+        }
+        buttonRow.addView(dialogButton("cancel") { dialog.dismiss() }, cancelLp)
+        buttonRow.addView(dialogButton("share") {
+            dialog.dismiss()
+            exportLog()
+        }, WRAP_CONTENT, WRAP_CONTENT)
+
+        root.addView(buttonRow, rowLp)
+        dialog.setContentView(root)
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.85).toInt(),
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        dialog.show()
+    }
 
     private fun exportLog() {
         val events = BlockLog.getAll()
