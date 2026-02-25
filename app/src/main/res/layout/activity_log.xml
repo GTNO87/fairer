@@ -19,6 +19,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Share button, top-right -->
+    <ImageButton
+        android:id="@+id/shareButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:alpha="0.55"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="share log"
+        android:padding="8dp"
+        android:src="@drawable/ic_share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- Screen title -->
     <TextView
         android:id="@+id/logTitle"

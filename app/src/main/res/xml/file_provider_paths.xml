@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Scoped to cache/exports/ — only the log export temp files are ever shared. -->
+    <cache-path name="exports" path="exports/" />
+</paths>

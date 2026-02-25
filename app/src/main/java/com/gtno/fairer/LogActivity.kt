@@ -1,5 +1,6 @@
 package com.gtno.fairer
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -10,9 +11,14 @@ import android.widget.TextView
 import android.widget.LinearLayout.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import com.gtno.fairer.data.BlockLog
 import com.gtno.fairer.databinding.ActivityLogBinding
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class LogActivity : AppCompatActivity() {
 
@@ -29,6 +35,7 @@ class LogActivity : AppCompatActivity() {
         jostRegular = ResourcesCompat.getFont(this, R.font.jost_regular)
 
         binding.backButton.setOnClickListener { finish() }
+        binding.shareButton.setOnClickListener { exportLog() }
         binding.clearButton.setOnClickListener {
             BlockLog.clear()
             renderLog()
@@ -40,6 +47,58 @@ class LogActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         renderLog()
+    }
+
+    // ── Export ─────────────────────────────────────────────────────────────────
+
+    private fun exportLog() {
+        val events = BlockLog.getAll()
+        if (events.isEmpty()) return
+
+        // Build grouped entries — same logic as renderLog()
+        data class Entry(val domain: String, val category: String, val count: Int, val lastSeen: Long)
+
+        val entries = events
+            .groupBy { it.domain to it.category }
+            .map { (key, evts) ->
+                Entry(
+                    domain   = key.first,
+                    category = key.second,
+                    count    = evts.size,
+                    lastSeen = evts.maxOf { it.timestamp },
+                )
+            }
+            .sortedByDescending { it.lastSeen }
+
+        val now = SimpleDateFormat("d MMM yyyy, HH:mm", Locale.getDefault()).format(Date())
+        val sb = StringBuilder()
+        sb.appendLine("Fairer Block Log")
+        sb.appendLine("Exported: $now")
+        sb.appendLine()
+        entries.forEach { entry ->
+            sb.appendLine("${entry.domain} — ${entry.category} — ×${entry.count}")
+        }
+        sb.appendLine()
+        sb.appendLine("${BlockLog.count} total blocked this session")
+
+        val exportDir = File(cacheDir, "exports")
+        exportDir.mkdirs()
+        val dateTag = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val file = File(exportDir, "fairer-log-$dateTag.txt")
+        try {
+            file.writeText(sb.toString())
+        } catch (_: Exception) {
+            return
+        }
+
+        val uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, "Fairer Block Log")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, null))
     }
 
     // ── Rendering ──────────────────────────────────────────────────────────────
