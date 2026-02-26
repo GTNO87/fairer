@@ -22,6 +22,12 @@ internal object BlockLog {
     /** Returns all events, most-recent first (capped at MAX_EVENTS). */
     fun getAll(): List<BlockEvent> = synchronized(lock) { events.toList() }
 
+    /**
+     * Increments the total blocked count without storing a full event.
+     * Used when the screen is off and detailed logging is suppressed.
+     */
+    fun incrementCount() = synchronized(lock) { totalCount++ }
+
     fun clear() = synchronized(lock) {
         events.clear()
         totalCount = 0
