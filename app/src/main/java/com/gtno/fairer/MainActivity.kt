@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.gtno.fairer.BuildConfig
 import com.gtno.fairer.data.BlockLog
 import com.gtno.fairer.data.BlocklistUpdater
 import com.gtno.fairer.data.UpdatePrefs
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         requestNotificationPermission()
+        binding.versionText.text = "v${BuildConfig.VERSION_NAME}"
 
         binding.powerButton.setOnClickListener {
             if (FairerVpnService.isRunning) stopVpn() else requestVpn()
