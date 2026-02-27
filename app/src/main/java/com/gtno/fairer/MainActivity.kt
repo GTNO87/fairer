@@ -15,7 +15,9 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.gtno.fairer.BuildConfig
@@ -74,6 +76,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.updateButton.setOnClickListener { startManualUpdate() }
+
+        binding.wifiOnlySwitch.isChecked = UpdatePrefs.getWifiOnly(this)
+        binding.wifiOnlySwitch.setOnCheckedChangeListener { _, isChecked ->
+            UpdatePrefs.setWifiOnly(this, isChecked)
+            scheduleWeeklyUpdate(applyUpdate = true)
+        }
 
         scheduleWeeklyUpdate()
     }
@@ -175,11 +183,28 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun scheduleWeeklyUpdate() {
-        val request = PeriodicWorkRequestBuilder<BlocklistUpdateWorker>(7, TimeUnit.DAYS).build()
+    private fun scheduleWeeklyUpdate(applyUpdate: Boolean = false) {
+        val constraints = Constraints.Builder()
+            .apply {
+                if (UpdatePrefs.getWifiOnly(this@MainActivity)) {
+                    setRequiredNetworkType(NetworkType.UNMETERED)
+                }
+            }
+            .build()
+
+        val request = PeriodicWorkRequestBuilder<BlocklistUpdateWorker>(7, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .build()
+
+        // KEEP on startup preserves the existing schedule.
+        // UPDATE when the user changes the setting — applies the new constraint
+        // immediately without resetting the 7-day timer.
+        val policy = if (applyUpdate) ExistingPeriodicWorkPolicy.UPDATE
+                     else             ExistingPeriodicWorkPolicy.KEEP
+
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "blocklist_update",
-            ExistingPeriodicWorkPolicy.KEEP,
+            policy,
             request
         )
     }

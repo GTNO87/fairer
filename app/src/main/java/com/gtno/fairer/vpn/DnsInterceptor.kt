@@ -1,9 +1,12 @@
 package com.gtno.fairer.vpn
 
 import com.gtno.fairer.data.BlocklistManager
-import java.io.ByteArrayOutputStream
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.concurrent.TimeUnit
 
 /**
  * Stateless DNS interceptor. Called once per IP packet, potentially from
@@ -14,9 +17,18 @@ internal object DnsInterceptor {
     // Direct IP avoids a chicken-and-egg problem: resolving cloudflare-dns.com
     // would itself require DNS, which we are intercepting. Cloudflare's TLS
     // certificate covers 1.1.1.1 via IP SAN, so hostname validation succeeds.
-    private val DOH_URL = URL("https://1.1.1.1/dns-query")
+    private const val DOH_URL        = "https://1.1.1.1/dns-query"
     private const val DOH_MIME       = "application/dns-message"
-    private const val DOH_TIMEOUT_MS = 3000
+    private const val DOH_TIMEOUT_MS = 3000L
+
+    // Single shared client — one HTTP/2 connection to 1.1.1.1 is multiplexed
+    // across all concurrent worker threads, eliminating per-request TLS handshakes.
+    // HTTP/1.1 is listed as fallback in case the server downgrades.
+    private val httpClient = OkHttpClient.Builder()
+        .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+        .connectTimeout(DOH_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+        .readTimeout(DOH_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+        .build()
 
     // RFC 1035 §3.1: total domain name ≤ 253 characters.
     private const val MAX_DOMAIN_LEN = 253
@@ -80,16 +92,23 @@ internal object DnsInterceptor {
         val clientIp = buf.copyOfRange(12, 16)
         val fakeIp   = buf.copyOfRange(16, 20)
 
-        // ── Extract queried domain ────────────────────────────────────────────
-        val domain = extractDomain(buf, dnsBase + 12, dnsBase + dnsLen) ?: return null
+        // ── Extract queried domain + qtype ───────────────────────────────────
+        val (domain, qtype) = extractQuestion(buf, dnsBase + 12, dnsBase + dnsLen) ?: return null
 
         // ── Block or forward ──────────────────────────────────────────────────
-        return if (BlocklistManager.isBlocked(domain)) {
-            onBlocked(domain, BlocklistManager.getCategoryFor(domain), srcPort, clientIp)
+        val category = BlocklistManager.blockResultFor(domain)
+        return if (category != null) {
+            onBlocked(domain, category, srcPort, clientIp)
             buildV4Packet(srcPort, clientIp, fakeIp, nxdomainDns(buf, dnsBase, dnsLen))
         } else {
-            val dnsQuery = buf.copyOfRange(dnsBase, dnsBase + dnsLen)
-            val dnsReply = forwardDns(dnsQuery) ?: return null
+            val txId = ((buf[dnsBase].toInt() and 0xFF) shl 8) or (buf[dnsBase + 1].toInt() and 0xFF)
+            val cacheKey = DnsCache.key(domain, qtype)
+            val dnsReply = DnsCache.get(cacheKey, txId) ?: run {
+                val dnsQuery = buf.copyOfRange(dnsBase, dnsBase + dnsLen)
+                val reply = forwardDns(dnsQuery) ?: return null
+                DnsCache.put(cacheKey, reply)
+                reply
+            }
             buildV4Packet(srcPort, clientIp, fakeIp, dnsReply)
         }
     }
@@ -126,23 +145,38 @@ internal object DnsInterceptor {
         val clientIp = buf.copyOfRange(8, 24)   // IPv6 source address (16 bytes)
         val fakeIp   = buf.copyOfRange(24, 40)  // IPv6 destination address (16 bytes)
 
-        // ── Extract queried domain ────────────────────────────────────────────
-        val domain = extractDomain(buf, dnsBase + 12, dnsBase + dnsLen) ?: return null
+        // ── Extract queried domain + qtype ───────────────────────────────────
+        val (domain, qtype) = extractQuestion(buf, dnsBase + 12, dnsBase + dnsLen) ?: return null
 
         // ── Block or forward ──────────────────────────────────────────────────
-        return if (BlocklistManager.isBlocked(domain)) {
-            onBlocked(domain, BlocklistManager.getCategoryFor(domain), srcPort, clientIp)
+        val category = BlocklistManager.blockResultFor(domain)
+        return if (category != null) {
+            onBlocked(domain, category, srcPort, clientIp)
             buildV6Packet(srcPort, clientIp, fakeIp, nxdomainDns(buf, dnsBase, dnsLen))
         } else {
-            val dnsQuery = buf.copyOfRange(dnsBase, dnsBase + dnsLen)
-            val dnsReply = forwardDns(dnsQuery) ?: return null
+            val txId = ((buf[dnsBase].toInt() and 0xFF) shl 8) or (buf[dnsBase + 1].toInt() and 0xFF)
+            val cacheKey = DnsCache.key(domain, qtype)
+            val dnsReply = DnsCache.get(cacheKey, txId) ?: run {
+                val dnsQuery = buf.copyOfRange(dnsBase, dnsBase + dnsLen)
+                val reply = forwardDns(dnsQuery) ?: return null
+                DnsCache.put(cacheKey, reply)
+                reply
+            }
             buildV6Packet(srcPort, clientIp, fakeIp, dnsReply)
         }
     }
 
-    // ── Domain extraction ──────────────────────────────────────────────────────
+    // ── Question extraction (domain + qtype) ──────────────────────────────────
 
-    private fun extractDomain(buf: ByteArray, pos: Int, limit: Int): String? {
+    /**
+     * Parses the DNS Question section starting at [pos] (first label byte).
+     * Returns a [Pair] of the lowercase domain name and the QTYPE integer,
+     * or null if the section is malformed or the domain exceeds [MAX_DOMAIN_LEN].
+     *
+     * After the QNAME null-terminator, the function reads the 2-byte QTYPE.
+     * QCLASS is not returned — it is always IN (1) for normal queries.
+     */
+    private fun extractQuestion(buf: ByteArray, pos: Int, limit: Int): Pair<String, Int>? {
         var p = pos
         val sb = StringBuilder()
         while (p < limit) {
@@ -155,7 +189,11 @@ internal object DnsInterceptor {
             // RFC 1035 §3.1 — total domain name must not exceed 253 characters.
             if (sb.length > MAX_DOMAIN_LEN) return null
         }
-        return sb.toString().lowercase().ifEmpty { null }
+        val domain = sb.toString().lowercase().ifEmpty { return null }
+        // Read QTYPE (2 bytes big-endian) immediately after the null terminator.
+        if (p + 2 > limit) return null
+        val qtype = ((buf[p].toInt() and 0xFF) shl 8) or (buf[p + 1].toInt() and 0xFF)
+        return domain to qtype
     }
 
     // ── DNS response builders ──────────────────────────────────────────────────
@@ -177,45 +215,24 @@ internal object DnsInterceptor {
     private fun forwardDns(query: ByteArray): ByteArray? {
         if (query.size < 2) return null
 
-        // Capture the query transaction ID so we can validate the response.
         val queryTxId = ((query[0].toInt() and 0xFF) shl 8) or (query[1].toInt() and 0xFF)
 
+        val request = Request.Builder()
+            .url(DOH_URL)
+            .post(query.toRequestBody(DOH_MIME.toMediaType()))
+            .header("Accept", DOH_MIME)
+            .build()
+
         return try {
-            val conn = (DOH_URL.openConnection() as HttpsURLConnection).apply {
-                requestMethod = "POST"
-                setRequestProperty("Content-Type", DOH_MIME)
-                setRequestProperty("Accept", DOH_MIME)
-                connectTimeout = DOH_TIMEOUT_MS
-                readTimeout    = DOH_TIMEOUT_MS
-                doOutput       = true
-                useCaches      = false
+            httpClient.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return null
+                val bytes = response.body?.bytes() ?: return null
+                if (bytes.size < 2 || bytes.size > MAX_DOH_RESPONSE_BYTES) return null
+                // Validate that the response transaction ID matches the query.
+                val replyTxId = ((bytes[0].toInt() and 0xFF) shl 8) or (bytes[1].toInt() and 0xFF)
+                if (replyTxId != queryTxId) return null
+                bytes
             }
-
-            conn.outputStream.use { it.write(query) }
-
-            if (conn.responseCode != 200) {
-                conn.errorStream?.close()
-                return null
-            }
-
-            val response = conn.inputStream.use { input ->
-                val out = ByteArrayOutputStream()
-                val buf = ByteArray(4096)
-                while (true) {
-                    val n = input.read(buf)
-                    if (n < 0) break
-                    if (out.size() + n > MAX_DOH_RESPONSE_BYTES) return null  // abort oversized response
-                    out.write(buf, 0, n)
-                }
-                out.toByteArray()
-            }
-            if (response.size < 2) return null
-
-            // Validate that the response transaction ID matches the query.
-            val replyTxId = ((response[0].toInt() and 0xFF) shl 8) or (response[1].toInt() and 0xFF)
-            if (replyTxId != queryTxId) return null
-
-            response
         } catch (_: Exception) {
             null
         }

@@ -12,4 +12,5 @@
     <string name="update_failed">update failed: %1$s</string>
     <string name="last_updated_never">lists never updated</string>
     <string name="last_updated_date">updated %1$s</string>
+    <string name="wifi_only_label">Wi-Fi only updates</string>
 </resources>

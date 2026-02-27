@@ -2,6 +2,7 @@ package com.gtno.fairer.data
 
 import android.content.pm.PackageManager
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Best-effort resolution of a source UDP port to an app name.
@@ -12,24 +13,36 @@ import java.io.File
  */
 internal object AppResolver {
 
+    // UIDs are assigned at install and stable for the app's lifetime, so the
+    // result of a PackageManager lookup (two Binder IPC calls) never goes stale
+    // within a VPN session. Caching eliminates the IPC overhead for every
+    // repeated block event from the same app.
+    private val uidCache = ConcurrentHashMap<Int, Pair<String, String>>()
+
+    // Compiled once; reused for every /proc/net/udp line split.
+    private val WHITESPACE = "\\s+".toRegex()
+
     fun resolve(srcPort: Int, srcIp: ByteArray, pm: PackageManager): Pair<String, String> {
         val uid = getUidForPort(srcPort, srcIp)
         return when {
-            uid < 0      -> "Unknown"  to "unknown"
-            uid < 10000  -> "System"   to "android"   // kernel / platform process
-            else -> {
-                val packages = pm.getPackagesForUid(uid)
-                if (packages.isNullOrEmpty()) return "Unknown" to "unknown"
-                val pkg = packages[0]
-                try {
-                    val label = pm.getApplicationLabel(
-                        pm.getApplicationInfo(pkg, 0)
-                    ).toString()
-                    label to pkg
-                } catch (_: Exception) {
-                    pkg to pkg
-                }
-            }
+            uid < 0     -> "Unknown" to "unknown"
+            uid < 10000 -> "System"  to "android"  // kernel / platform process
+            else        -> uidCache.getOrPut(uid) { lookupUid(uid, pm) }
+        }
+    }
+
+    /** Clears the UID→app name cache. Call when the VPN session ends. */
+    fun clearCache() = uidCache.clear()
+
+    private fun lookupUid(uid: Int, pm: PackageManager): Pair<String, String> {
+        val packages = pm.getPackagesForUid(uid)
+        if (packages.isNullOrEmpty()) return "Unknown" to "unknown"
+        val pkg = packages[0]
+        return try {
+            val label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+            label to pkg
+        } catch (_: Exception) {
+            pkg to pkg
         }
     }
 
@@ -47,7 +60,7 @@ internal object AppResolver {
         try {
             File("/proc/net/udp").bufferedReader().use { reader ->
                 for (line in reader.lineSequence().drop(1)) {
-                    val parts = line.trim().split("\\s+".toRegex())
+                    val parts = line.trim().split(WHITESPACE)
                     if (parts.size < 8) continue
                     // local_address field is "XXXXXXXX:PPPP"
                     if (parts[1].equals("$ipHex:$portHex", ignoreCase = true)) {
@@ -61,7 +74,7 @@ internal object AppResolver {
         try {
             File("/proc/net/udp6").bufferedReader().use { reader ->
                 for (line in reader.lineSequence().drop(1)) {
-                    val parts = line.trim().split("\\s+".toRegex())
+                    val parts = line.trim().split(WHITESPACE)
                     if (parts.size < 8) continue
                     val localPort = parts[1].substringAfterLast(':')
                     if (localPort.equals(portHex, ignoreCase = true)) {

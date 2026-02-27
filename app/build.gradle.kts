@@ -80,4 +80,5 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.work:work-runtime:2.9.0")
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

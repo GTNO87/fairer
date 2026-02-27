@@ -117,6 +117,23 @@ internal object BlocklistManager {
         return false
     }
 
+    /**
+     * Combines [isBlocked] and [getCategoryFor] into a single hierarchy walk.
+     * Returns the category string if the domain (or a parent) is blocked,
+     * or null if it is not blocked. Avoids the double traversal of calling
+     * both functions separately on the hot path.
+     */
+    fun blockResultFor(domain: String): String? {
+        var d = domain
+        while (d.isNotEmpty()) {
+            if (blocked.contains(d)) return categories[d] ?: "Other"
+            val dot = d.indexOf('.')
+            if (dot < 0) break
+            d = d.substring(dot + 1)
+        }
+        return null
+    }
+
     /** Returns the number of domains currently loaded. */
     fun domainCount(): Int = blocked.size
 

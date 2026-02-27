@@ -181,6 +181,8 @@ class FairerVpnService : VpnService() {
         unregisterScreenReceiver()
         dnsExecutor?.shutdownNow()
         dnsExecutor = null
+        DnsCache.clear()
+        AppResolver.clearCache()
         pfd?.close()
         pfd = null
         @Suppress("DEPRECATION")
