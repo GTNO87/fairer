@@ -13,6 +13,8 @@ import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.PowerManager
+import android.system.Os
+import android.system.OsConstants
 import androidx.core.app.NotificationCompat
 import com.gtno.fairer.MainActivity
 import com.gtno.fairer.data.AppResolver
@@ -106,6 +108,15 @@ class FairerVpnService : VpnService() {
             return
         }
         pfd = established
+
+        // The TUN fd is non-blocking by default, which causes read() to return 0
+        // immediately when there are no packets and the loop to spin at 100% CPU.
+        // Setting it to blocking mode makes read() sleep until a packet arrives,
+        // keeping the CPU completely idle between DNS queries.
+        try {
+            val flags = Os.fcntl(established.fileDescriptor, OsConstants.F_GETFL)
+            Os.fcntl(established.fileDescriptor, OsConstants.F_SETFL, flags and OsConstants.O_NONBLOCK.inv())
+        } catch (_: Exception) { /* non-fatal — loop degrades to spinning if this fails */ }
 
         BlocklistManager.load(applicationContext)
 
