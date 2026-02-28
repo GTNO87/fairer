@@ -157,6 +157,9 @@ class LogActivity : AppCompatActivity() {
 
         val exportDir = File(cacheDir, "exports")
         exportDir.mkdirs()
+        // Remove any previous export files so stale block-log data does not
+        // accumulate across days on the device's cache partition.
+        exportDir.listFiles()?.forEach { it.delete() }
         val dateTag = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val file = File(exportDir, "fairer-log-$dateTag.txt")
         try {

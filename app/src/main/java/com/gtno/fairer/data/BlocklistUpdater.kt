@@ -120,12 +120,17 @@ internal object BlocklistUpdater {
     private fun writeAtomic(dir: File, filename: String, bytes: ByteArray) {
         val dest = File(dir, filename)
         val tmp  = File(dir, "$filename.tmp")
-        tmp.writeBytes(bytes)
-        if (!tmp.renameTo(dest)) {
-            // renameTo can fail on some filesystems — fall back to direct write
-            dest.writeBytes(bytes)
+        try {
+            tmp.writeBytes(bytes)
+            if (!tmp.renameTo(dest)) {
+                // renameTo can fail on some filesystems — fall back to direct write
+                dest.writeBytes(bytes)
+            }
+        } finally {
+            // Always remove the tmp file — even if an exception propagates — so
+            // a disk-full or mid-write failure never leaves an orphan on disk.
+            if (tmp.exists()) tmp.delete()
         }
-        if (tmp.exists()) tmp.delete()
     }
 
     private fun parseSig(bytes: ByteArray): ByteArray? {
