@@ -627,22 +627,47 @@
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# DISCOVERED DOMAINS — generated 2026-02-26
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DISCOVERED DOMAINS — generated 2026-02-28
 #
 # These entries were found via DNS subdomain enumeration of the seed domains
 # listed in scripts/vendors.txt. Re-run scripts/build_blocklist.py to refresh.
 # ══════════════════════════════════════════════════════════════════════════════
 
+0.0.0.0 ad.cs-i.com
+0.0.0.0 admin.cs-i.com
+0.0.0.0 ads.cs-i.com
 0.0.0.0 analytics.optimizelabs.com
 0.0.0.0 api.optimizelabs.com
 0.0.0.0 app.exponea.com
 0.0.0.0 apps.optimizelabs.com
+0.0.0.0 au.cs-i.com
+0.0.0.0 auth.cs-i.com
 0.0.0.0 auth.epsilon.com
+0.0.0.0 auth.ficoanalyticcloud.com
 0.0.0.0 beacon.optimizelabs.com
+0.0.0.0 bid.cs-i.com
+0.0.0.0 cdn.exponea.com
 0.0.0.0 collect.optimizelabs.com
 0.0.0.0 collector.optimizelabs.com
+0.0.0.0 dashboard.braze.com
+0.0.0.0 dashboard.cs-i.com
+0.0.0.0 data.cs-i.com
+0.0.0.0 de.cs-i.com
+0.0.0.0 dsp.cs-i.com
+0.0.0.0 e.braze.com
 0.0.0.0 edge.optimizelabs.com
+0.0.0.0 engine.cs-i.com
+0.0.0.0 eu.cs-i.com
+0.0.0.0 eu1.cs-i.com
+0.0.0.0 eu2.cs-i.com
 0.0.0.0 exchange.cs-i.com
+0.0.0.0 fr.cs-i.com
 0.0.0.0 gateway.experian.com
 0.0.0.0 gateway.optimizelabs.com
 0.0.0.0 hit.optimizelabs.com
@@ -650,27 +675,51 @@
 0.0.0.0 imp.optimizelabs.com
 0.0.0.0 ingest.optimizelabs.com
 0.0.0.0 log.optimizelabs.com
+0.0.0.0 login.cs-i.com
 0.0.0.0 logs.optimizelabs.com
+0.0.0.0 mail.cs-i.com
 0.0.0.0 media.optimizelabs.com
 0.0.0.0 metrics.optimizelabs.com
 0.0.0.0 mobile.choicepoint.com
+0.0.0.0 mobile.cs-i.com
 0.0.0.0 p.optimizelabs.com
+0.0.0.0 personalise.cs-i.com
+0.0.0.0 personalize.cs-i.com
 0.0.0.0 pixel.audigent.com
 0.0.0.0 pixel.optimizelabs.com
 0.0.0.0 platform.optimizelabs.com
 0.0.0.0 proxy.optimizelabs.com
+0.0.0.0 push.cs-i.com
 0.0.0.0 px.optimizelabs.com
+0.0.0.0 realtime.cs-i.com
+0.0.0.0 rec.cs-i.com
+0.0.0.0 recommend.cs-i.com
+0.0.0.0 recommendation.cs-i.com
+0.0.0.0 recs.cs-i.com
+0.0.0.0 rt.cs-i.com
+0.0.0.0 rtb.cs-i.com
 0.0.0.0 s.optimizelabs.com
+0.0.0.0 segment.cs-i.com
 0.0.0.0 service.optimizelabs.com
 0.0.0.0 services.optimizelabs.com
+0.0.0.0 ssp.cs-i.com
+0.0.0.0 static.medallia.com
 0.0.0.0 static.optimizelabs.com
 0.0.0.0 stats.optimizelabs.com
+0.0.0.0 stream.cs-i.com
 0.0.0.0 t.optimizelabs.com
 0.0.0.0 tr.optimizelabs.com
 0.0.0.0 track.optimizelabs.com
 0.0.0.0 tracking.optimizelabs.com
+0.0.0.0 uk.cs-i.com
+0.0.0.0 us.cs-i.com
+0.0.0.0 us1.cs-i.com
+0.0.0.0 us2.cs-i.com
 0.0.0.0 v1.optimizelabs.com
+0.0.0.0 v3.conductrics.com
 0.0.0.0 v3.optimizelabs.com
+0.0.0.0 www.braze.com
+0.0.0.0 www.cs-i.com
 
 # ── End of discovered domains ─────────────────────────────────────────────────
 
