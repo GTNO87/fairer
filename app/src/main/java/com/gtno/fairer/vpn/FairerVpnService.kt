@@ -15,6 +15,7 @@ import android.os.ParcelFileDescriptor
 import android.os.PowerManager
 import android.system.Os
 import android.system.OsConstants
+import android.system.StructPollfd
 import androidx.core.app.NotificationCompat
 import com.gtno.fairer.MainActivity
 import com.gtno.fairer.data.AppResolver
@@ -109,15 +110,6 @@ class FairerVpnService : VpnService() {
         }
         pfd = established
 
-        // The TUN fd is non-blocking by default, which causes read() to return 0
-        // immediately when there are no packets and the loop to spin at 100% CPU.
-        // Setting it to blocking mode makes read() sleep until a packet arrives,
-        // keeping the CPU completely idle between DNS queries.
-        try {
-            val flags = Os.fcntl(established.fileDescriptor, OsConstants.F_GETFL)
-            Os.fcntl(established.fileDescriptor, OsConstants.F_SETFL, flags and OsConstants.O_NONBLOCK.inv())
-        } catch (_: Exception) { /* non-fatal — loop degrades to spinning if this fails */ }
-
         BlocklistManager.load(applicationContext)
 
         dnsExecutor = ThreadPoolExecutor(
@@ -137,15 +129,34 @@ class FairerVpnService : VpnService() {
     }
 
     private fun runLoop(pfd: ParcelFileDescriptor) {
-        val buf    = ByteArray(32767)
-        val input  = FileInputStream(pfd.fileDescriptor)
-        val output = FileOutputStream(pfd.fileDescriptor)
+        val buf       = ByteArray(32767)
+        val input     = FileInputStream(pfd.fileDescriptor)
+        val output    = FileOutputStream(pfd.fileDescriptor)
         val writeLock = Any()
 
+        // Poll descriptor used to block the thread until a packet is available.
+        // Os.poll() is public API (API 21+) and keeps the CPU idle between DNS
+        // queries. A 1-second timeout lets the loop notice stopVpn() promptly
+        // even if closing the fd does not immediately wake the poll syscall.
+        val pollFd = StructPollfd().also {
+            it.fd     = pfd.fileDescriptor
+            it.events = OsConstants.POLLIN.toShort()
+        }
+
         try {
-            while (!Thread.currentThread().isInterrupted) {
+            while (isRunning && !Thread.currentThread().isInterrupted) {
+                try {
+                    Os.poll(arrayOf(pollFd), 1_000)
+                } catch (_: Exception) { break }
+
+                // fd closed or in error state — exit cleanly
+                val revents = pollFd.revents.toInt()
+                if (revents and (OsConstants.POLLERR or OsConstants.POLLHUP or OsConstants.POLLNVAL) != 0) break
+                // poll timed out with no data — loop back to check isRunning
+                if (revents and OsConstants.POLLIN == 0) continue
+
                 val len = input.read(buf)
-                if (len < 0) break   // TUN fd closed — exit cleanly
+                if (len < 0) break
                 if (len == 0) continue
 
                 val packet = buf.copyOf(len)
