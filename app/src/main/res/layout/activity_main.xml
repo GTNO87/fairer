@@ -35,15 +35,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Power button: centered in the upper portion of the screen -->
+    <!-- Power button: centered between logo and status text -->
     <FrameLayout
         android:id="@+id/powerButtonContainer"
         android:layout_width="144dp"
         android:layout_height="144dp"
-        app:layout_constraintBottom_toTopOf="@id/statsCard"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/statusText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
         app:layout_constraintVertical_bias="0.5">
 
         <!-- Outer glow ring -->
@@ -66,11 +68,13 @@
 
     </FrameLayout>
 
-    <!-- Status text: centered between power button and card -->
+    <!-- Status text: below power button, above stats card -->
     <TextView
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
         android:fontFamily="@font/jost_regular"
         android:text="@string/status_inactive"
         android:textColor="#A6FFFFFF"

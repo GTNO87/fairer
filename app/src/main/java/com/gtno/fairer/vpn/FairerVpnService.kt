@@ -91,7 +91,7 @@ class FairerVpnService : VpnService() {
         }
 
         val established = Builder()
-            .setSession("Fairer")
+            .setSession("fairer")
             .addAddress(VPN_ADDRESS, SUBNET_PREFIX)
             .addRoute(VPN_SUBNET, SUBNET_PREFIX)
             .addDnsServer(FAKE_DNS_IP)
@@ -234,9 +234,12 @@ class FairerVpnService : VpnService() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Fairer VPN",
+            "fairer VPN",
             NotificationManager.IMPORTANCE_LOW,
-        ).apply { description = "Fairer is active" }
+        ).apply {
+            description = "fairer is active"
+            setShowBadge(false)
+        }
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
@@ -247,11 +250,12 @@ class FairerVpnService : VpnService() {
             PendingIntent.FLAG_IMMUTABLE,
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Fairer is active")
+            .setContentTitle("fairer is active")
             .setContentText("Blocking commercial tracking")
             .setSmallIcon(android.R.drawable.ic_lock_lock)
             .setContentIntent(pi)
             .setOngoing(true)
+            .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE)
             .build()
     }
 }
