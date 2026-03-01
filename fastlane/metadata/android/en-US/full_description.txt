@@ -1,0 +1,36 @@
+fairer blocks commercial manipulation at the DNS level, across every app on your phone.
+
+Most tracking protection stops ads. fairer targets the infrastructure companies use to charge you more based on who you are.
+
+When you open a shopping app, dozens of companies you've never heard of are contacted in milliseconds. 
+Criteo builds a profile to enable dynamic pricing. 
+Amplitude optimises what price to show you. 
+Data brokers sell your purchasing history to retailers. 
+Fairer intercepts these requests before they leave your device.
+
+WHAT GETS BLOCKED
+- Dynamic pricing services (Criteo, Pricefx)
+- Behavioural analytics and price optimisation (Amplitude, Mixpanel)
+- Data brokers and identity resolution services (Acxiom, LiveRamp)
+- A/B testing platforms used for price experimentation
+- Cross-app tracking and retargeting networks
+- Device fingerprinting services
+
+In addition to commercial manipulation, Fairer also blocks ads, 
+malware, phishing, social media trackers, and device manufacturer 
+telemetry via community-maintained blocklists from Hagezi and EasyPrivacy.
+
+HOW IT WORKS
+Fairer runs as a local VPN service and intercepts DNS queries before they reach the network. Blocked domains never connect. No data leaves your device and no account is required.
+
+400,000+ domains blocked across 7 curated sources, updated automatically every week.
+
+PRIVACY BY DESIGN
+- Zero data collection
+- No account required
+- Fully open source (GPL-3.0)
+- Three security audits completed
+- Cryptographically signed blocklist updates
+- Works across all apps, not just browsers
+
+Check the block log to see exactly what was trying to reach your device today.
