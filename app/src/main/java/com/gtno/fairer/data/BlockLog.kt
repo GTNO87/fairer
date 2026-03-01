@@ -1,5 +1,6 @@
 package com.gtno.fairer.data
 
+import android.content.Context
 import java.time.LocalDate
 
 internal object BlockLog {
@@ -33,6 +34,32 @@ internal object BlockLog {
     fun incrementCount() = synchronized(lock) {
         checkMidnightReset()
         totalCount++
+    }
+
+    /**
+     * Restores totalCount from SharedPreferences if the saved date is today.
+     * Call once on app start so the count survives process death between VPN sessions.
+     */
+    fun restore(context: Context) = synchronized(lock) {
+        val prefs = context.getSharedPreferences("block_log", Context.MODE_PRIVATE)
+        val savedDate = prefs.getString("reset_date", null) ?: return@synchronized
+        val today = LocalDate.now()
+        if (LocalDate.parse(savedDate) == today) {
+            totalCount = prefs.getInt("total_count", 0)
+            lastResetDate = today
+        }
+    }
+
+    /**
+     * Persists totalCount and lastResetDate to SharedPreferences.
+     * Call when the VPN stops so the count survives process death.
+     */
+    fun save(context: Context) = synchronized(lock) {
+        context.getSharedPreferences("block_log", Context.MODE_PRIVATE)
+            .edit()
+            .putString("reset_date", lastResetDate.toString())
+            .putInt("total_count", totalCount)
+            .apply()
     }
 
     fun clear() = synchronized(lock) {
