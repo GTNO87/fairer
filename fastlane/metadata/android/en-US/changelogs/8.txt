@@ -1,0 +1,8 @@
+- Added 6 community blocklists bringing total coverage to 400,000+ blocked domains
+- Automatic weekly blocklist updates via WorkManager
+- Cryptographically signed blocklist verification
+- Log export feature with privacy warning
+- Battery optimisation — zero CPU overhead in background
+- Screen orientation locked to portrait
+- Blocked counter now persists across VPN toggles, resets daily
+- Security audits completed, all findings resolved
