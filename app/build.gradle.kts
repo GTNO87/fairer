@@ -63,6 +63,11 @@ android {
         buildConfig  = true
     }
 
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     applicationVariants.all {
         val variant = this
         variant.outputs
