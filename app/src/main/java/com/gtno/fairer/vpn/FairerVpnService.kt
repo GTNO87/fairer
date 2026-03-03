@@ -98,7 +98,7 @@ class FairerVpnService : VpnService() {
             startForeground(NOTIFICATION_ID, buildNotification())
         }
 
-        val established = Builder()
+        val builder = Builder()
             .setSession("fairer")
             .addAddress(VPN_ADDRESS, SUBNET_PREFIX)
             .addRoute(VPN_SUBNET, SUBNET_PREFIX)
@@ -107,7 +107,12 @@ class FairerVpnService : VpnService() {
             .addRoute(FAKE_DNS_IP_V6, PREFIX_V6)
             .addDnsServer(FAKE_DNS_IP_V6)
             .setMtu(1500)
-            .establish()
+        // Tell Android whether the VPN interface is metered so apps like Google
+        // Photos and WhatsApp can detect Wi-Fi correctly alongside setUnderlyingNetworks().
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            builder.setMetered(!isUnderlyingNetworkUnmetered())
+        }
+        val established = builder.establish()
 
         if (established == null) {
             stopSelf()
@@ -260,6 +265,18 @@ class FairerVpnService : VpnService() {
     }
 
     // ── Underlying network ─────────────────────────────────────────────────────
+
+    /** Returns true if the physical (non-VPN) underlying network has NET_CAPABILITY_NOT_METERED. */
+    private fun isUnderlyingNetworkUnmetered(): Boolean {
+        val cm = getSystemService(ConnectivityManager::class.java)
+        return cm.allNetworks.any { n ->
+            cm.getNetworkCapabilities(n)?.run {
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN) &&
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+            } == true
+        }
+    }
 
     private fun registerNetworkCallback() {
         val cm = getSystemService(ConnectivityManager::class.java)
