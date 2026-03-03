@@ -21,8 +21,8 @@ android {
         applicationId = "com.gtno.fairer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.1.6"
+        versionCode = 9
+        versionName = "1.1.8"
     }
 
     signingConfigs {

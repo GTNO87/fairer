@@ -148,12 +148,11 @@ class LogActivity : AppCompatActivity() {
         val sb = StringBuilder()
         sb.appendLine("Fairer Block Log")
         sb.appendLine("Exported: $now")
+        sb.appendLine("${BlockLog.count} total blocked this session")
         sb.appendLine()
         entries.forEach { entry ->
             sb.appendLine("${entry.domain} - ${entry.category} - x${entry.count}")
         }
-        sb.appendLine()
-        sb.appendLine("${BlockLog.count} total blocked this session")
 
         val exportDir = File(cacheDir, "exports")
         exportDir.mkdirs()

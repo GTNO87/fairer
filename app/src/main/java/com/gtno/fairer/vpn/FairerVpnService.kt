@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.net.ConnectivityManager
+import android.net.Network
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -69,6 +71,7 @@ class FairerVpnService : VpnService() {
     // When false, AppResolver and BlockLog event writes are skipped to save battery.
     @Volatile private var screenOn = true
     private var screenReceiver: BroadcastReceiver? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {
@@ -122,6 +125,7 @@ class FairerVpnService : VpnService() {
 
         isRunning = true
         registerScreenReceiver()
+        registerNetworkCallback()
         vpnThread = Thread({ runLoop(established) }, "fairer-vpn").apply {
             isDaemon = true
             start()
@@ -201,6 +205,7 @@ class FairerVpnService : VpnService() {
     private fun stopVpn() {
         isRunning = false
         unregisterScreenReceiver()
+        unregisterNetworkCallback()
         dnsExecutor?.shutdownNow()
         dnsExecutor = null
         DnsCache.clear()
@@ -223,6 +228,7 @@ class FairerVpnService : VpnService() {
             pfd = null
         }
         unregisterScreenReceiver()
+        unregisterNetworkCallback()
         super.onDestroy()
     }
 
@@ -248,6 +254,31 @@ class FairerVpnService : VpnService() {
         screenReceiver?.let {
             try { unregisterReceiver(it) } catch (_: Exception) { }
             screenReceiver = null
+        }
+    }
+
+    // ── Underlying network ─────────────────────────────────────────────────────
+
+    private fun registerNetworkCallback() {
+        val cm = getSystemService(ConnectivityManager::class.java)
+        // Seed immediately so there is no gap between establish() and the first callback.
+        setUnderlyingNetworks(cm.activeNetwork?.let { arrayOf(it) })
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                setUnderlyingNetworks(arrayOf(network))
+            }
+            override fun onLost(network: Network) {
+                // Revert to system-managed behaviour until the next onAvailable.
+                setUnderlyingNetworks(null)
+            }
+        }
+        cm.registerDefaultNetworkCallback(networkCallback!!)
+    }
+
+    private fun unregisterNetworkCallback() {
+        networkCallback?.let {
+            try { getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) } catch (_: Exception) { }
+            networkCallback = null
         }
     }
 
