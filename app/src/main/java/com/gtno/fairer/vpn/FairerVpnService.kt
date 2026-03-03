@@ -11,6 +11,8 @@ import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -261,18 +263,36 @@ class FairerVpnService : VpnService() {
 
     private fun registerNetworkCallback() {
         val cm = getSystemService(ConnectivityManager::class.java)
-        // Seed immediately so there is no gap between establish() and the first callback.
-        setUnderlyingNetworks(cm.activeNetwork?.let { arrayOf(it) })
+
+        // NET_CAPABILITY_NOT_VPN is essential: once establish() returns, the VPN
+        // is the default network, so activeNetwork and registerDefaultNetworkCallback
+        // both point at the TUN interface itself. The request below explicitly targets
+        // the physical network underneath.
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
+            .build()
+
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 setUnderlyingNetworks(arrayOf(network))
             }
             override fun onLost(network: Network) {
-                // Revert to system-managed behaviour until the next onAvailable.
                 setUnderlyingNetworks(null)
             }
         }
-        cm.registerDefaultNetworkCallback(networkCallback!!)
+
+        // Seed immediately using the same non-VPN filter so there is no gap
+        // between establish() and the first callback delivery.
+        val underlying = cm.allNetworks.firstOrNull { n ->
+            cm.getNetworkCapabilities(n)?.run {
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
+            } == true
+        }
+        setUnderlyingNetworks(underlying?.let { arrayOf(it) })
+
+        cm.registerNetworkCallback(request, networkCallback!!)
     }
 
     private fun unregisterNetworkCallback() {
