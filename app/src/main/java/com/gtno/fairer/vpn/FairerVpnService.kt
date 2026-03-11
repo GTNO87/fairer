@@ -187,9 +187,9 @@ class FairerVpnService : VpnService() {
                                         BlockLog.add(BlockEvent(domain, category, "Unknown", "unknown"))
                                     }
                                 } else {
-                                    // Screen off: skip /proc/net/udp read and event allocation;
-                                    // just increment the count so the tally stays accurate.
-                                    BlockLog.incrementCount()
+                                    // Screen off: skip the expensive /proc/net/udp lookup but still
+                                    // record the domain so it appears in the log and export.
+                                    BlockLog.add(BlockEvent(domain, category, "Unknown", "unknown"))
                                 }
                             },
                         ) ?: return@execute

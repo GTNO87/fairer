@@ -25,15 +25,6 @@ internal object BlockLog {
     fun getAll(): List<BlockEvent> = synchronized(lock) { events.toList() }
 
     /**
-     * Increments the total blocked count without storing a full event.
-     * Used when the screen is off and detailed logging is suppressed.
-     */
-    fun incrementCount() = synchronized(lock) {
-        checkMidnightReset()
-        totalCount++
-    }
-
-    /**
      * Restores totalCount from SharedPreferences if the saved date is today.
      * Call once on app start so the count survives process death between VPN sessions.
      */
