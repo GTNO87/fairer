@@ -1,0 +1,5 @@
+- Blocked counter now persists across VPN toggles and resets daily at midnight
+- Screen orientation locked to portrait to prevent UI issues
+- Fixed Wi-Fi detection for apps like WhatsApp when Fairer is running
+- Block log now shows all blocked domains with no entry cap
+- Removed dependency metadata from APK for F-Droid compliance

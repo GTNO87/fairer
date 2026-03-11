@@ -62,7 +62,7 @@ The Fairer unique list is cryptographically signed with Ed25519. The app verifie
 
 ## Security
 
-Fairer was security audited covering:
+Fairer was AI-security audited covering:
 
 - Response size caps on all HTTP downloads (5 MB for the Fairer list, 50 MB for community hosts files, 64 KB for DoH responses) to prevent OOM from oversized or malicious server responses
 - Atomic blocklist file writes via `.tmp` + rename, so a crash during a download never leaves a corrupt cached copy on disk
