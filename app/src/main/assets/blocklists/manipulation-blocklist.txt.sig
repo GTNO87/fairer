@@ -1,2 +1,2 @@
 algorithm: ed25519
-signature: UKP4Tygd2dxa7euygBHV1T/30WjALh7PxTw5Awk85RANUEDKuf8dp9IwD5YFKLNE/yRXJl74IRtdUykkgEo0AQ==
+signature: zzgiaNwXwCgj8F+w2Tx0rVRX7I55f1oGXWhJokG04B9mcdlf3aqB82vnanEAKEW/t8bgpBQtsGJTCce555RICA==
